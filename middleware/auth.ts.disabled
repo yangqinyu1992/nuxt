@@ -1,0 +1,15 @@
+import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
+
+export default defineNuxtRouteMiddleware(async () => {
+  // 仅在客户端做校验，避免 SSR 阶段的请求中断
+  if (import.meta.server) return
+
+  try {
+    // 复用全局中间件同样的登录校验方式
+    // 项目已有 useClientFetch 的使用（见 auth.global.client.ts）
+    // 若未定义，可改为：await $fetch('/api/auth/me')
+    await useClientFetch('/api/auth/me')
+  } catch {
+    return navigateTo('/login', { replace: true })
+  }
+})

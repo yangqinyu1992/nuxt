@@ -19,26 +19,22 @@ const logout = async () => {
   navigateTo('/login')
 }
 
-// ========== 主题切换（明/暗） ==========
+/* 主题切换（仅代理全局状态，不自管状态，避免与布局冲突） */
 const THEME_KEY = 'dashboard_theme'
-const isDark = ref(false)
-
-const applyTheme = (dark: boolean) => {
-  if (typeof document !== 'undefined') {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
+const isDark = computed({
+  get() {
+    if (typeof document === 'undefined') return false
+    return document.documentElement.classList.contains('dark')
+  },
+  set(val: boolean) {
+    if (typeof document === 'undefined') return
+    const root = document.documentElement
+    root.setAttribute('data-theme', val ? 'dark' : 'light')
+    if (val) root.classList.add('dark')
+    else root.classList.remove('dark')
+    try { localStorage.setItem(THEME_KEY, val ? 'dark' : 'light') } catch {}
   }
-}
-onMounted(() => {
-  const saved = localStorage.getItem(THEME_KEY)
-  isDark.value = saved ? saved === 'dark' : false
-  applyTheme(isDark.value)
 })
-watch(isDark, (val) => {
-  localStorage.setItem(THEME_KEY, val ? 'dark' : 'light')
-  applyTheme(val)
-})
-
-const themeText = computed(() => (isDark.value ? '暗色' : '明亮'))
 
 // ========== 轻量 Loading，优化切页闪屏 ==========
 const pageLoading = ref(true)
@@ -265,12 +261,7 @@ onUnmounted(() => {
         <p>核心业务指标总览 · 实时洞察</p>
       </div>
       <div class="header-actions">
-        <el-switch
-          v-model="isDark"
-          inline-prompt
-          :active-text="'暗色'"
-          :inactive-text="'明亮'"
-        />
+        
         <el-button @click="toggleFullscreen">{{ isFullscreen ? '退出全屏' : '全屏展示' }}</el-button>
         <el-divider direction="vertical" />
         <el-button @click="logout">退出登录</el-button>

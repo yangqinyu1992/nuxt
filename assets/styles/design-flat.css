@@ -1,0 +1,283 @@
+/* Global Flat + Rounded Design for Element Plus under .design-flat namespace */
+.design-flat {
+  --df-border: #eef0f3;
+  --df-border-strong: #e6e9ef;
+  --df-bg-soft: #fafafa;
+  --df-bg-card: #ffffff;
+  --df-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  --df-shadow-strong: 0 6px 18px rgba(0, 0, 0, 0.06);
+  --df-hover: #f5faff;
+  --df-header: #f7f9fc;
+
+  /* Typography */
+  --df-font: "SF Pro Rounded", "SF Pro Text", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Helvetica Neue", Helvetica, Arial, "Noto Sans CJK SC", "Noto Sans", Roboto, system-ui, -apple-system, sans-serif;
+  --df-text-1: #2b2f36;
+  --df-text-2: #5e6673;
+}
+
+/* 全局字体（仅在 design-flat 命名空间内） */
+.design-flat,
+.design-flat body,
+.design-flat * {
+  font-family: var(--df-font);
+}
+
+/* 让 Element Plus 跟随全局字体 */
+.design-flat {
+  --el-font-family: var(--df-font);
+}
+
+/* Card */
+.design-flat .el-card {
+  border-radius: 12px;
+  border: 1px solid var(--df-border);
+  box-shadow: var(--df-shadow);
+  background: var(--df-bg-card);
+}
+.design-flat .el-card__header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--df-border);
+  font-weight: 600;
+}
+
+/* Input */
+.design-flat .el-input__wrapper {
+  border-radius: 10px !important;
+  background: var(--df-bg-soft);
+  box-shadow: none !important;
+  border: 1px solid transparent;
+  transition: border-color .15s ease, background .15s ease;
+}
+.design-flat .el-input__wrapper:hover {
+  border-color: var(--df-border-strong);
+  background: #fff;
+}
+.design-flat .is-focus > .el-input__wrapper,
+.design-flat .el-input.is-focus .el-input__wrapper {
+  border-color: var(--el-color-primary);
+  background: #fff;
+}
+
+/* Button */
+.design-flat .el-button {
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+.design-flat .el-button.is-plain {
+  background: var(--df-bg-soft);
+  border-color: var(--df-border);
+}
+
+/* Table */
+.design-flat .el-table {
+  --el-table-border-color: var(--df-border);
+  --el-table-header-bg-color: var(--df-header);
+  --el-table-row-hover-bg-color: var(--df-hover);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.design-flat .el-table .cell {
+  padding: 10px 12px;
+}
+.design-flat .el-table__header th {
+  font-weight: 600;
+  padding: var(--df-header-pad-y) var(--df-header-pad-x);
+}
+.design-flat .el-table__header th .cell {
+  font-size: var(--df-header-font-size);
+  line-height: calc(var(--df-header-font-size) + 10px);
+}
+
+/* Pagination */
+.design-flat .el-pagination {
+  padding: 8px 0 0;
+}
+.design-flat .el-pagination .el-input__wrapper {
+  border-radius: 10px;
+  background: #fff;
+}
+
+/* Dialog */
+.design-flat .el-dialog {
+  border-radius: 12px !important;
+  box-shadow: var(--df-shadow-strong) !important;
+}
+.design-flat .el-dialog__header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--df-border);
+  margin-right: 0;
+}
+.design-flat .el-dialog__title {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.2px;
+  color: var(--df-text-1);
+  line-height: 1.2;
+}
+.design-flat .el-dialog__headerbtn {
+  top: 14px;
+  right: 14px;
+}
+.design-flat .el-dialog__footer {
+  border-top: 1px solid var(--df-border);
+  padding: 12px 20px 16px;
+}
+
+/* Misc */
+.design-flat .avatar {
+  border-radius: 10px;
+}
+
+/* ========================= */
+/* Density: compact/standard/comfortable */
+/* ========================= */
+
+/* 默认变量（standard） */
+.design-flat {
+  --df-cell-pad-y: 10px;
+  --df-cell-pad-x: 12px;
+  --df-control-height: 32px; /* 输入与按钮统一高度 */
+  /* 新增：密度相关字体与表头尺寸 */
+  --df-font-size: 13px;           /* 单元格字体 */
+  --df-header-font-size: 13px;    /* 表头字体 */
+  --df-header-pad-y: 10px;
+  --df-header-pad-x: 12px;
+}
+
+/* 工具类：三档密度（可在根容器/页面容器切换类名） */
+.design-flat.df-density-compact {
+  --df-cell-pad-y: 5px;
+  --df-cell-pad-x: 10px;
+  --df-control-height: 26px;
+  --df-font-size: 12px;
+  --df-header-font-size: 12px;
+  --df-header-pad-y: 6px;
+  --df-header-pad-x: 10px;
+}
+.design-flat.df-density-standard {
+  --df-cell-pad-y: 10px;
+  --df-cell-pad-x: 12px;
+  --df-control-height: 32px;
+  --df-font-size: 13px;
+  --df-header-font-size: 13px;
+  --df-header-pad-y: 10px;
+  --df-header-pad-x: 12px;
+}
+.design-flat.df-density-comfortable {
+  --df-cell-pad-y: 16px;
+  --df-cell-pad-x: 18px;
+  --df-control-height: 40px;
+  --df-font-size: 15px;
+  --df-header-font-size: 15px;
+  --df-header-pad-y: 16px;
+  --df-header-pad-x: 18px;
+}
+
+/* 应用到表格单元格与控件 */
+.design-flat .el-table .cell {
+  padding: var(--df-cell-pad-y) var(--df-cell-pad-x);
+  font-size: var(--df-font-size);
+  line-height: calc(var(--df-font-size) + 8px);
+}
+.design-flat .el-input__wrapper {
+  min-height: var(--df-control-height);
+}
+.design-flat .el-button {
+  height: var(--df-control-height);
+  padding: 0 14px;
+}
+
+/* ========================= */
+/* Hover / Active 细节动效 */
+/* ========================= */
+
+/* 输入 */
+.design-flat .el-input__wrapper {
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.design-flat .el-input__wrapper:hover {
+  border-color: var(--df-border-strong);
+  background: #fff;
+}
+.design-flat .is-focus > .el-input__wrapper,
+.design-flat .el-input.is-focus .el-input__wrapper {
+  border-color: var(--el-color-primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--el-color-primary) 18%, transparent);
+}
+
+/* 按钮（基础） */
+.design-flat .el-button {
+  transition: background-color .15s ease, color .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.design-flat .el-button:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.design-flat .el-button:active {
+  box-shadow: 0 1px 3px rgba(0,0,0,.08) inset;
+}
+
+/* 不同类型按钮的细节 */
+.design-flat .el-button.is-plain:hover {
+  background: #fff;
+  border-color: var(--df-border-strong);
+}
+.design-flat .el-button--primary:hover {
+  filter: brightness(1.03);
+}
+.design-flat .el-button--primary.is-plain:hover {
+  background: color-mix(in oklab, var(--el-color-primary) 10%, #fff);
+  border-color: color-mix(in oklab, var(--el-color-primary) 30%, var(--df-border));
+}
+
+/* ========================= */
+/* 暗色模式适配（跟随 data-theme="dark"） */
+/* ========================= */
+html[data-theme="dark"] .design-flat {
+  --df-border: #2a2f3a;
+  --df-border-strong: #3a4050;
+  --df-bg-soft: #1b1f27;
+  --df-bg-card: #12151c;
+  --df-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  --df-shadow-strong: 0 10px 24px rgba(0, 0, 0, 0.6);
+  --df-hover: rgba(64, 158, 255, 0.08);
+  --df-header: #171b22;
+  --df-text-1: #e8ebf1;
+  --df-text-2: #aab2c0;
+}
+
+/* 暗色下控件与表格细节 */
+html[data-theme="dark"] .design-flat .el-card {
+  background: var(--df-bg-card);
+  border-color: var(--df-border);
+}
+html[data-theme="dark"] .design-flat .el-input__wrapper {
+  background: #171b22;
+  border-color: transparent;
+}
+html[data-theme="dark"] .design-flat .el-input__wrapper:hover {
+  background: #1e2330;
+}
+html[data-theme="dark"] .design-flat .is-focus > .el-input__wrapper,
+html[data-theme="dark"] .design-flat .el-input.is-focus .el-input__wrapper {
+  background: #202636;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--el-color-primary) 24%, transparent);
+}
+html[data-theme="dark"] .design-flat .el-table {
+  --el-table-header-text-color: var(--df-text-2);
+  --el-table-text-color: var(--df-text-1);
+  --el-table-border-color: var(--df-border);
+  --el-table-header-bg-color: var(--df-header);
+  --el-table-row-hover-bg-color: color-mix(in oklab, var(--el-color-primary) 8%, transparent);
+}
+html[data-theme="dark"] .design-flat .el-dialog {
+  background: var(--df-bg-card);
+}
+html[data-theme="dark"] .design-flat .el-dialog__title {
+  color: var(--df-text-1);
+}
+html[data-theme="dark"] .design-flat .el-dialog__header,
+html[data-theme="dark"] .design-flat .el-dialog__footer {
+  border-color: var(--df-border);
+}

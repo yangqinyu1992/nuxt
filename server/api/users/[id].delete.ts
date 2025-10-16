@@ -1,12 +1,11 @@
-import { defineEventHandler, getCookie, createError } from 'h3'
+import { defineEventHandler, getRouterParam, getCookie, createError } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { User } from '../../models/User'
 import { verifyToken } from '../../utils/auth'
+import mongoose from 'mongoose'
 
 function safeCreateError(i: any) {
-  if (typeof i === 'string') {
-    return createError({ statusCode: 500, statusMessage: i, message: i })
-  }
+  if (typeof i === 'string') return createError({ statusCode: 500, statusMessage: i, message: i })
   if (i && typeof i === 'object') {
     const code = (i as any).statusCode ?? 500
     const msg = (i as any).message ?? (i as any).statusMessage ?? '服务器错误'
@@ -18,17 +17,19 @@ function safeCreateError(i: any) {
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const token = getCookie(event, 'token')
-  if (!token) {
-    throw safeCreateError({ statusCode: 401, statusMessage: '未登录', message: '未登录' })
-  }
+  if (!token) throw safeCreateError({ statusCode: 401, statusMessage: '未登录', message: '未登录' })
   try {
-    const decoded = verifyToken(token, config.jwtSecret)
-    const user = await User.findById(decoded.uid)
-    if (!user) {
-      throw safeCreateError({ statusCode: 401, statusMessage: '用户不存在', message: '用户不存在' })
-    }
-    return { user: { id: user._id, username: user.username, name: user.name || '', avatar: user.avatar || '' } }
+    verifyToken(token, config.jwtSecret)
   } catch {
     throw safeCreateError({ statusCode: 401, statusMessage: '无效令牌', message: '无效令牌' })
   }
+
+  const id = String(getRouterParam(event, 'id') ?? '')
+  if (!id || !mongoose.isValidObjectId(id)) {
+    throw safeCreateError({ statusCode: 400, statusMessage: '无效ID', message: '无效ID' })
+  }
+
+  const ret = await User.findByIdAndDelete(id)
+  if (!ret) throw safeCreateError({ statusCode: 404, statusMessage: '用户不存在', message: '用户不存在' })
+  return { success: true }
 })

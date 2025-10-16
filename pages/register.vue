@@ -9,6 +9,8 @@ interface RegisterForm {
   username: string
   password: string
   confirm: string
+  name: string
+  avatar: string
 }
 
 const formRef = ref()
@@ -16,11 +18,15 @@ const form = reactive<RegisterForm>({
   username: '',
   password: '',
   confirm: '',
+  name: '',
+  avatar: '',
 })
 
 const rules = {
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  name: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
+  avatar: [{ type: 'url', message: '请输入有效的头像URL', trigger: 'blur' }],
   confirm: [
     { required: true, message: '请再次输入密码', trigger: 'blur' },
     {
@@ -44,13 +50,15 @@ const submit = async () => {
       const { error } = await useFetch('/api/auth/register', {
         method: 'POST',
         server: false,
-        body: { username: form.username, password: form.password },
+        body: { username: form.username, password: form.password, name: form.name, avatar: form.avatar },
       })
       if (error.value) throw error.value
       ElMessage.success('注册成功，已登录')
       navigateTo('/')
-    } catch (e) {
-      ElMessage.error('注册失败：用户名已存在或服务器错误')
+    } catch (e: any) {
+      console.error('register error ->', e)
+      const msg = e?.data?.message || e?.data?.statusMessage || e?.message || '注册失败：用户名已存在或服务器错误'
+      ElMessage.error(msg)
     } finally {
       loading.value = false
     }
@@ -75,7 +83,7 @@ const submit = async () => {
             <div class="logo">EP</div>
             <div class="title">
               <h2>用户注册</h2>
-              <p>请输入账号与密码</p>
+              <p>请输入账号与密码，支持设置昵称和头像</p>
             </div>
           </div>
 
@@ -83,6 +91,16 @@ const submit = async () => {
             <el-form-item label="账号" prop="username">
               <el-input v-model="form.username" placeholder="请输入账号" :prefix-icon="User" clearable />
             </el-form-item>
+            <el-form-item label="昵称" prop="name">
+              <el-input v-model="form.name" placeholder="请输入昵称" clearable />
+            </el-form-item>
+            <el-form-item label="头像URL" prop="avatar">
+              <el-input v-model="form.avatar" placeholder="请输入头像图片链接（可选）" clearable />
+            </el-form-item>
+            <div v-if="form.avatar" style="margin: -4px 0 8px 0; display:flex; align-items:center; gap:12px;">
+              <span style="font-size:13px;color:#909399;">头像预览：</span>
+              <img :src="form.avatar" alt="avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid #ebeef5;" />
+            </div>
 
             <el-form-item label="密码" prop="password">
               <el-input v-model="form.password" type="password" placeholder="请输入密码" :prefix-icon="Lock" clearable />

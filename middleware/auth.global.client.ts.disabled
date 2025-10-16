@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // 根路径在登录后跳到 /home
   if (to.path === '/') {
     try {
-      await $fetch('/api/auth/me')
+      await useClientFetch('/api/auth/me')
       return navigateTo('/home', { replace: true })
     } catch {
       return navigateTo('/login', { replace: true })
@@ -19,7 +19,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // 其他受保护页面校验登录
   try {
-    await $fetch('/api/auth/me')
+    await useClientFetch('/api/auth/me')
   } catch {
     return navigateTo('/login', { replace: true })
   }

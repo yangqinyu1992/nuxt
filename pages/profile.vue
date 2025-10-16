@@ -1,0 +1,373 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+
+interface UserListItem {
+  id: string
+  username: string
+  name?: string
+  avatar?: string
+  createdAt: string | Date
+}
+
+const loading = ref(false)
+const list = ref<UserListItem[]>([])
+const total = ref(0)
+const page = ref(1)
+const pageSize = ref(10)
+const keyword = ref('')
+
+// 新建/编辑弹窗
+const dialogVisible = ref(false)
+const dialogTitle = ref<'新建用户' | '编辑用户'>('新建用户')
+const editingId = ref<string | null>(null)
+const form = ref({
+  username: '',
+  name: '',
+  avatar: '',
+  password: ''
+})
+const formLoading = ref(false)
+
+// 拉取列表
+async function fetchList() {
+  loading.value = true
+  try {
+    const data = await $fetch<{ items: UserListItem[]; total: number; page: number; pageSize: number }>('/api/users', {
+      method: 'GET',
+      params: { page: page.value, pageSize: pageSize.value, keyword: keyword.value.trim() },
+
+    })
+    list.value = data.items
+    total.value = data.total
+    page.value = data.page
+    pageSize.value = data.pageSize
+  } catch (e: any) {
+    ElMessage.error(e?.data?.message || e?.message || '加载失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+function onSearch() {
+  page.value = 1
+  fetchList()
+}
+
+function onReset() {
+  keyword.value = ''
+  page.value = 1
+  fetchList()
+}
+
+function onPageChange(p: number) {
+  page.value = p
+  fetchList()
+}
+
+function onPageSizeChange(ps: number) {
+  pageSize.value = ps
+  page.value = 1
+  fetchList()
+}
+
+// 新建
+function openCreate() {
+  dialogTitle.value = '新建用户'
+  editingId.value = null
+  form.value = { username: '', name: '', avatar: '', password: '' }
+  dialogVisible.value = true
+}
+
+// 编辑
+function openEdit(row: UserListItem) {
+  dialogTitle.value = '编辑用户'
+  editingId.value = row.id
+  form.value = {
+    username: row.username,
+    name: row.name || '',
+    avatar: row.avatar || '',
+    password: '' // 可选修改，留空则不改
+  }
+  dialogVisible.value = true
+}
+
+// 保存（新建/更新）
+async function submitForm() {
+  // 简单校验
+  if (!form.value.username.trim()) {
+    ElMessage.warning('请填写用户名')
+    return
+  }
+  if (!editingId.value && !form.value.password.trim()) {
+    ElMessage.warning('请填写密码')
+    return
+  }
+
+  formLoading.value = true
+  try {
+    if (editingId.value) {
+      // 更新
+      await $fetch(`/api/users/${editingId.value}`, {
+        method: 'PUT',
+        body: {
+          name: form.value.name.trim(),
+          avatar: form.value.avatar.trim(),
+          // 密码可选
+          ...(form.value.password.trim() ? { password: form.value.password.trim() } : {})
+        },
+
+      })
+      ElMessage.success('已更新')
+    } else {
+      // 创建
+      await $fetch('/api/users', {
+        method: 'POST',
+        body: {
+          username: form.value.username.trim(),
+          name: form.value.name.trim(),
+          avatar: form.value.avatar.trim(),
+          password: form.value.password.trim()
+        },
+
+      })
+      ElMessage.success('已创建')
+    }
+    dialogVisible.value = false
+    fetchList()
+  } catch (e: any) {
+    ElMessage.error(e?.data?.message || e?.message || '提交失败')
+  } finally {
+    formLoading.value = false
+  }
+}
+
+// 删除
+async function onDelete(row: UserListItem) {
+  try {
+    await ElMessageBox.confirm(`确定要删除用户「${row.username}」吗？`, '提示', { type: 'warning' })
+  } catch {
+    return
+  }
+  try {
+    await $fetch(`/api/users/${row.id}`, { method: 'DELETE' })
+    ElMessage.success('已删除')
+    // 如果删除后当前页无数据，回退一页
+    if (list.value.length === 1 && page.value > 1) {
+      page.value = page.value - 1
+    }
+    fetchList()
+  } catch (e: any) {
+    ElMessage.error(e?.data?.message || e?.message || '删除失败')
+  }
+}
+
+onMounted(() => {
+  fetchList()
+})
+</script>
+
+<template>
+  <div class="user-page design-flat">
+    <div class="toolbar">
+      <el-input
+        v-model="keyword"
+        placeholder="搜索用户名/昵称"
+        clearable
+        class="w240"
+        @keyup.enter="onSearch"
+      />
+      <el-button type="primary" @click="onSearch">查询</el-button>
+      <el-button @click="onReset">重置</el-button>
+      <el-button type="success" @click="openCreate">新建</el-button>
+    </div>
+
+    <el-card shadow="never">
+      <el-table :data="list" v-loading="loading" border>
+        <el-table-column prop="username" label="用户名" min-width="140" />
+        <el-table-column prop="name" label="昵称" min-width="120">
+          <template #default="{ row }">
+            <span>{{ row.name || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="头像" min-width="120">
+          <template #default="{ row }">
+            <img v-if="row.avatar" :src="row.avatar" class="avatar" alt="avatar" />
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createdAt" label="创建时间" min-width="180">
+          <template #default="{ row }">
+            {{ new Date(row.createdAt).toLocaleString() }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180" fixed="right">
+          <template #default="{ row }">
+            <el-button type="primary" text @click="openEdit(row)">编辑</el-button>
+            <el-button type="danger" text @click="onDelete(row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <div class="pager">
+        <el-pagination
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          :current-page="page"
+          :page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          @current-change="onPageChange"
+          @size-change="onPageSizeChange"
+        />
+      </div>
+    </el-card>
+
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="520px" destroy-on-close>
+      <el-form label-width="90px" :model="form" @submit.prevent>
+        <el-form-item label="用户名">
+          <el-input v-model="form.username" :disabled="!!editingId" maxlength="50" />
+        </el-form-item>
+        <el-form-item label="昵称">
+          <el-input v-model="form.name" maxlength="50" />
+        </el-form-item>
+        <el-form-item label="头像URL">
+          <el-input v-model="form.avatar" maxlength="300" placeholder="https://..." />
+        </el-form-item>
+        <el-form-item :label="editingId ? '新密码' : '密码'">
+          <el-input v-model="form.password" type="password" show-password maxlength="100" :placeholder="editingId ? '留空则不修改' : ''" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="formLoading" @click="submitForm">确定</el-button>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<style scoped>
+.user-page {
+  padding: 16px;
+}
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.w240 {
+  width: 240px;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #ebeef5;
+}
+.pager {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
+}
+/* 扁平化+圆角设计（仅对本页生效，基于 design-flat 命名空间） */
+.design-flat {
+  /* 可按需定制色板 */
+  --df-border: #eef0f3;
+  --df-border-strong: #e6e9ef;
+  --df-bg-soft: #fafafa;
+  --df-bg-card: #ffffff;
+  --df-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  --df-shadow-strong: 0 6px 18px rgba(0, 0, 0, 0.06);
+  --df-hover: #f5faff;
+  --df-header: #f7f9fc;
+
+  /* 卡片 */
+  :deep(.el-card) {
+    border-radius: 12px;
+    border: 1px solid var(--df-border);
+    box-shadow: var(--df-shadow);
+    background: var(--df-bg-card);
+  }
+  :deep(.el-card__header) {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--df-border);
+    font-weight: 600;
+  }
+
+  /* 输入框（更扁平、圆角） */
+  :deep(.el-input__wrapper) {
+    border-radius: 10px;
+    background: var(--df-bg-soft);
+    box-shadow: none;
+    border: 1px solid transparent;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  :deep(.el-input__wrapper:hover) {
+    border-color: var(--df-border-strong);
+    background: #fff;
+  }
+  :deep(.is-focus .el-input__wrapper) {
+    border-color: var(--el-color-primary);
+    background: #fff;
+  }
+
+  /* 按钮（圆角扁平） */
+  :deep(.el-button) {
+    border-radius: 10px;
+    box-shadow: none;
+  }
+  :deep(.el-button.is-plain) {
+    background: var(--df-bg-soft);
+    border-color: var(--df-border);
+  }
+
+  /* 表格（浅边框、柔和表头与 Hover） */
+  :deep(.el-table) {
+    --el-table-border-color: var(--df-border);
+    --el-table-header-bg-color: var(--df-header);
+    --el-table-row-hover-bg-color: var(--df-hover);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  :deep(.el-table .cell) {
+    padding: 10px 12px;
+  }
+  :deep(.el-table__header th) {
+    font-weight: 600;
+  }
+
+  /* 分页（圆角输入） */
+  :deep(.el-pagination) {
+    padding: 8px 0 0;
+  }
+  :deep(.el-pagination .el-input__wrapper) {
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  /* 弹窗（圆角与分割线） */
+  :deep(.el-dialog) {
+    border-radius: 12px;
+    box-shadow: var(--df-shadow-strong);
+  }
+  :deep(.el-dialog__header) {
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--df-border);
+    margin-right: 0;
+  }
+  :deep(.el-dialog__footer) {
+    border-top: 1px solid var(--df-border);
+    padding-top: 12px;
+  }
+
+  /* 工具栏与头像图片 */
+  .toolbar {
+    background: transparent;
+  }
+  .avatar {
+    border-radius: 10px;
+  }
+}
+</style>

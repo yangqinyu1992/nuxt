@@ -5,7 +5,8 @@ export default defineNuxtConfig({
   css: [
     'element-plus/dist/index.css',
     'element-plus/theme-chalk/dark/css-vars.css',
-    '@/assets/styles/theme.css'
+    '@/assets/styles/theme.css',
+    '@/assets/styles/design-flat.css'
   ],
   app: {
     head: {
@@ -23,7 +24,7 @@ export default defineNuxtConfig({
   },
   experimental: {
     renderJsonPayloads: true,
-    inlineSSRStyles: true
+
   },
   vite: {
     build: {
