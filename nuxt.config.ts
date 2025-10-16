@@ -2,6 +2,11 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  css: [
+    'element-plus/dist/index.css',
+    'element-plus/theme-chalk/dark/css-vars.css',
+    '@/assets/styles/theme.css'
+  ],
   app: {
     head: {
       title: 'Nuxt + ElementPlus Demo',
@@ -17,7 +22,8 @@ export default defineNuxtConfig({
     compatibilityDate: '2025-10-16'
   },
   experimental: {
-    renderJsonPayloads: true
+    renderJsonPayloads: true,
+    inlineSSRStyles: true
   },
   vite: {
     build: {

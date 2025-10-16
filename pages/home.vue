@@ -366,21 +366,7 @@ onUnmounted(() => {
 </template>
 
 <style>
-/* 全局主题变量（不加 scoped，挂在 :root / [data-theme='dark']） */
-:root {
-  --bg-page: #f5f7fa;
-  --bg-card: #ffffff;
-  --text-1: #303133;
-  --text-2: #606266;
-  --border: #e4e7ed;
-}
-[data-theme='dark'] {
-  --bg-page: #111318;
-  --bg-card: #1a1d24;
-  --text-1: #e5eaf3;
-  --text-2: #cfd3dc;
-  --border: #30343b;
-}
+/* 主题变量已全局注入（assets/styles/theme.css），避免刷新样式回退与闪烁 */
 </style>
 
 <style scoped>

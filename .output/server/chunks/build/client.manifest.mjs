@@ -47,7 +47,7 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "BL24CBUF.js",
+    "file": "DivIYull.js",
     "name": "default",
     "src": "layouts/default.vue",
     "isDynamicEntry": true,
@@ -58,8 +58,8 @@ const client_manifest = {
     ],
     "css": []
   },
-  "default.2T3ZodpA.css": {
-    "file": "default.2T3ZodpA.css",
+  "default.B1tdNG-M.css": {
+    "file": "default.B1tdNG-M.css",
     "resourceType": "style",
     "prefetch": true,
     "preload": true
@@ -130,7 +130,7 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "BoanhudQ.js",
+    "file": "AjSJHMjJ.js",
     "name": "entry",
     "src": "node_modules/.pnpm/nuxt@4.1.3_@parcel+watcher@_5e8508ab136d2ec7a35859f69c793ae1/node_modules/nuxt/dist/app/entry.js",
     "isEntry": true,
@@ -144,22 +144,14 @@ const client_manifest = {
       "node_modules/.pnpm/nuxt@4.1.3_@parcel+watcher@_5e8508ab136d2ec7a35859f69c793ae1/node_modules/nuxt/dist/app/components/error-404.vue",
       "node_modules/.pnpm/nuxt@4.1.3_@parcel+watcher@_5e8508ab136d2ec7a35859f69c793ae1/node_modules/nuxt/dist/app/components/error-500.vue"
     ],
-    "css": [
-      "entry.DgRAh9SC.css"
-    ]
-  },
-  "entry.DgRAh9SC.css": {
-    "file": "entry.DgRAh9SC.css",
-    "resourceType": "style",
-    "prefetch": true,
-    "preload": true
+    "_globalCSS": true
   },
   "pages/home.vue": {
     "resourceType": "script",
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "DGzTZdSL.js",
+    "file": "CAInZKr-.js",
     "name": "home",
     "src": "pages/home.vue",
     "isDynamicEntry": true,
@@ -171,8 +163,8 @@ const client_manifest = {
     ],
     "css": []
   },
-  "home.BF67U30w.css": {
-    "file": "home.BF67U30w.css",
+  "home.BKowRBzE.css": {
+    "file": "home.BKowRBzE.css",
     "resourceType": "style",
     "prefetch": true,
     "preload": true

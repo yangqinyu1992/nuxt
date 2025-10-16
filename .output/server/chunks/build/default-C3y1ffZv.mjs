@@ -108,7 +108,7 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
             }, {
               default: vueExports.withCtx((_2, _push3, _parent3, _scopeId2) => {
                 if (_push3) {
-                  _push3(`<div class="header-left" data-v-cd40486f${_scopeId2}>`);
+                  _push3(`<div class="header-left" data-v-de4728b0${_scopeId2}>`);
                   _push3(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_button, {
                     text: "",
                     circle: "",
@@ -143,7 +143,7 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                     }),
                     _: 1
                   }, _parent3, _scopeId2));
-                  _push3(`<div class="brand" data-v-cd40486f${_scopeId2}>Nuxt Admin</div>`);
+                  _push3(`<div class="brand" data-v-de4728b0${_scopeId2}>Nuxt Admin</div>`);
                   _push3(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_breadcrumb, { separator: "/" }, {
                     default: vueExports.withCtx((_3, _push4, _parent4, _scopeId3) => {
                       if (_push4) {
@@ -184,7 +184,7 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                     }),
                     _: 1
                   }, _parent3, _scopeId2));
-                  _push3(`</div><div class="header-right" data-v-cd40486f${_scopeId2}>`);
+                  _push3(`</div><div class="header-right" data-v-de4728b0${_scopeId2}>`);
                   _push3(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_button, {
                     link: "",
                     onClick: toggleTheme
@@ -315,7 +315,7 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                                             }),
                                             _: 1
                                           }, _parent7, _scopeId6));
-                                          _push7(`<span data-v-cd40486f${_scopeId6}>仪表盘</span>`);
+                                          _push7(`<span data-v-de4728b0${_scopeId6}>仪表盘</span>`);
                                         } else {
                                           return [
                                             vueExports.createVNode(_component_el_icon, null, {
@@ -413,7 +413,7 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                   _push3(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_main, { class: "app-main" }, {
                     default: vueExports.withCtx((_3, _push4, _parent4, _scopeId3) => {
                       if (_push4) {
-                        _push4(`<div class="tabs" data-v-cd40486f${_scopeId3}>`);
+                        _push4(`<div class="tabs" data-v-de4728b0${_scopeId3}>`);
                         _push4(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_tabs, {
                           modelValue: activePath.value,
                           "onUpdate:modelValue": ($event) => activePath.value = $event,
@@ -698,7 +698,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("layouts/default.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const _default = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-cd40486f"]]);
+const _default = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-de4728b0"]]);
 
 export { _default as default };
-//# sourceMappingURL=default-DAOAEdVi.mjs.map
+//# sourceMappingURL=default-C3y1ffZv.mjs.map

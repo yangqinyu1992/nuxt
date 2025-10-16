@@ -37264,7 +37264,7 @@ const _routes = [
     name: "home",
     path: "/home",
     meta: __nuxt_page_meta$2 || {},
-    component: () => import('./home-Cv2qUYZ9.mjs')
+    component: () => import('./home-B0v9S2Ye.mjs')
   },
   {
     name: "index",
@@ -37662,15 +37662,6 @@ const __nuxt_component_0$1 = vueExports.defineComponent({
     };
   }
 });
-const echarts_server_qAWuHCu0rbNl6e0_vcEiqg_bGBPxNoDx41D7_a2G758 = /* @__PURE__ */ defineNuxtPlugin((nuxtApp) => {
-  const Stub = vueExports.defineComponent({
-    name: "VChartStub",
-    render() {
-      return vueExports.h("div");
-    }
-  });
-  nuxtApp.vueApp.component("v-chart", Stub);
-});
 const element_plus_h4WEk9dmnTz6XKdrgkoGJdGhsx59phe3Z9mq30V_CL8 = /* @__PURE__ */ defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.use(ElementPlus);
   for (const [key, component] of Object.entries(ElIconModules)) {
@@ -37682,7 +37673,6 @@ const plugins = [
   plugin,
   revive_payload_server_WfBYrZPPMX5hLPU8secc8gTekzyLKbYUB3lmVizU7Ks,
   components_plugin_4kY4pyzJIYX99vmMAAIorFf3CnAaptHitJgf7JxiED8,
-  echarts_server_qAWuHCu0rbNl6e0_vcEiqg_bGBPxNoDx41D7_a2G758,
   element_plus_h4WEk9dmnTz6XKdrgkoGJdGhsx59phe3Z9mq30V_CL8
 ];
 var serverRenderer_cjs_prod = {};
@@ -39951,7 +39941,7 @@ function requireServerRenderer_cjs_prod() {
 }
 var serverRenderer_cjs_prodExports = requireServerRenderer_cjs_prod();
 const layouts = {
-  default: vueExports.defineAsyncComponent(() => import('./default-DAOAEdVi.mjs').then((m) => m.default || m))
+  default: vueExports.defineAsyncComponent(() => import('./default-C3y1ffZv.mjs').then((m) => m.default || m))
 };
 const LayoutLoader = vueExports.defineComponent({
   name: "LayoutLoader",

@@ -1,0 +1,50 @@
+/* 全局主题变量：SSR 首屏可用 */
+/* 基础变量（浅色） */
+:root {
+  --bg-page: #f5f7fa;
+  --bg-card: #ffffff;
+  --text-1: #1f2937;
+  --text-2: #6b7280;
+  --border: #e5e7eb;
+  --border-1: #e5e7eb;
+  --primary: #409EFF;
+  --success: #67C23A;
+  --warning: #E6A23C;
+  --danger: #F56C6C;
+}
+
+/* 暗色变量（Element Plus 暗色变量会配合使用） */
+[data-theme='dark'] {
+  --bg-page: #111318;
+  --bg-card: #16181d;
+  --text-1: #e5e7eb;
+  --text-2: #9ca3af;
+  --border: #2a2e36;
+  --border-1: #2a2e36;
+  --primary: #409EFF;
+  --success: #67C23A;
+  --warning: #E6A23C;
+  --danger: #F56C6C;
+}
+
+/* 全局基础 Reset（避免双滚动、撑满视口） */
+html, body, #__nuxt {
+  height: 100%;
+}
+html, body {
+  overflow: hidden; /* 禁止页面级滚动，只让内容区滚动 */
+}
+body {
+  background: var(--bg-page);
+  color: var(--text-1);
+}
+
+/* 登录页禁滚动开关 */
+.no-scroll {
+  overflow: hidden !important;
+}
+
+/* 通用卡片样式（若需要） */
+.el-card {
+  background: var(--bg-card);
+}

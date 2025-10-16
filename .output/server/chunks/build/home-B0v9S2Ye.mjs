@@ -29,11 +29,13 @@ const _sfc_main$1 = /* @__PURE__ */ vueExports.defineComponent({
     option: {},
     shadow: { default: "never" },
     rootMargin: { default: "100px" },
-    height: { default: "320px" }
+    height: { default: "320px" },
+    lazy: { type: Boolean, default: true }
   },
   setup(__props) {
+    const props = __props;
     const holder = vueExports.ref(null);
-    const isVisible = vueExports.ref(false);
+    const isVisible = vueExports.ref(!props.lazy);
     return (_ctx, _push, _parent, _attrs) => {
       const _component_el_card = vueExports.resolveComponent("el-card");
       const _component_ClientOnly = __nuxt_component_0$1;
@@ -88,7 +90,7 @@ _sfc_main$1.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/ChartCard.vue");
   return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
 };
-const ChartCard = /* @__PURE__ */ Object.assign(_export_sfc(_sfc_main$1, [["__scopeId", "data-v-d3b73a22"]]), { __name: "ChartCard" });
+const ChartCard = /* @__PURE__ */ Object.assign(_export_sfc(_sfc_main$1, [["__scopeId", "data-v-a64004a4"]]), { __name: "ChartCard" });
 const THEME_KEY = "dashboard_theme";
 const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
   __name: "home",
@@ -293,7 +295,7 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
         class: "dashboard",
         ref_key: "containerRef",
         ref: containerRef
-      }, _attrs, serverRenderer_cjs_prodExports.ssrGetDirectiveProps(_ctx, _directive_loading, pageLoading.value)))} data-v-94e61e2b><div class="header" data-v-94e61e2b><div class="title" data-v-94e61e2b><h2 data-v-94e61e2b>运营驾驶舱</h2><p data-v-94e61e2b>核心业务指标总览 · 实时洞察</p></div><div class="header-actions" data-v-94e61e2b>`);
+      }, _attrs, serverRenderer_cjs_prodExports.ssrGetDirectiveProps(_ctx, _directive_loading, pageLoading.value)))} data-v-20dbbaf6><div class="header" data-v-20dbbaf6><div class="title" data-v-20dbbaf6><h2 data-v-20dbbaf6>运营驾驶舱</h2><p data-v-20dbbaf6>核心业务指标总览 · 实时洞察</p></div><div class="header-actions" data-v-20dbbaf6>`);
       _push(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_switch, {
         modelValue: isDark.value,
         "onUpdate:modelValue": ($event) => isDark.value = $event,
@@ -338,7 +340,7 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
         }),
         _: 1
       }, _parent));
-      _push(`</div></div><div class="grid" data-v-94e61e2b><div class="grid-row" data-v-94e61e2b>`);
+      _push(`</div></div><div class="grid" data-v-20dbbaf6><div class="grid-row" data-v-20dbbaf6>`);
       _push(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_row, { gutter: 12 }, {
         default: vueExports.withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
@@ -358,7 +360,7 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                     }, {
                       default: vueExports.withCtx((_3, _push4, _parent4, _scopeId3) => {
                         if (_push4) {
-                          _push4(`<div class="stat" data-v-94e61e2b${_scopeId3}><div class="label" data-v-94e61e2b${_scopeId3}>${serverRenderer_cjs_prodExports.ssrInterpolate(card.title)}</div><div class="value" style="${serverRenderer_cjs_prodExports.ssrRenderStyle({ color: card.color })}" data-v-94e61e2b${_scopeId3}>${serverRenderer_cjs_prodExports.ssrInterpolate(card.value)}</div><div class="trend" data-v-94e61e2b${_scopeId3}>${serverRenderer_cjs_prodExports.ssrInterpolate(card.trend)}</div></div>`);
+                          _push4(`<div class="stat" data-v-20dbbaf6${_scopeId3}><div class="label" data-v-20dbbaf6${_scopeId3}>${serverRenderer_cjs_prodExports.ssrInterpolate(card.title)}</div><div class="value" style="${serverRenderer_cjs_prodExports.ssrRenderStyle({ color: card.color })}" data-v-20dbbaf6${_scopeId3}>${serverRenderer_cjs_prodExports.ssrInterpolate(card.value)}</div><div class="trend" data-v-20dbbaf6${_scopeId3}>${serverRenderer_cjs_prodExports.ssrInterpolate(card.trend)}</div></div>`);
                         } else {
                           return [
                             vueExports.createVNode("div", { class: "stat" }, [
@@ -434,7 +436,7 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
         }),
         _: 1
       }, _parent));
-      _push(`</div><div class="grid-row" data-v-94e61e2b>`);
+      _push(`</div><div class="grid-row" data-v-20dbbaf6>`);
       _push(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_row, { gutter: 12 }, {
         default: vueExports.withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
@@ -446,13 +448,15 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                 if (_push3) {
                   _push3(serverRenderer_cjs_prodExports.ssrRenderComponent(ChartCard, {
                     option: lineOption.value,
-                    height: "320px"
+                    height: "320px",
+                    lazy: false
                   }, null, _parent3, _scopeId2));
                 } else {
                   return [
                     vueExports.createVNode(ChartCard, {
                       option: lineOption.value,
-                      height: "320px"
+                      height: "320px",
+                      lazy: false
                     }, null, 8, ["option"])
                   ];
                 }
@@ -467,13 +471,15 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                 if (_push3) {
                   _push3(serverRenderer_cjs_prodExports.ssrRenderComponent(ChartCard, {
                     option: pieOption.value,
-                    height: "320px"
+                    height: "320px",
+                    lazy: false
                   }, null, _parent3, _scopeId2));
                 } else {
                   return [
                     vueExports.createVNode(ChartCard, {
                       option: pieOption.value,
-                      height: "320px"
+                      height: "320px",
+                      lazy: false
                     }, null, 8, ["option"])
                   ];
                 }
@@ -489,7 +495,8 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                 default: vueExports.withCtx(() => [
                   vueExports.createVNode(ChartCard, {
                     option: lineOption.value,
-                    height: "320px"
+                    height: "320px",
+                    lazy: false
                   }, null, 8, ["option"])
                 ]),
                 _: 1
@@ -501,7 +508,8 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                 default: vueExports.withCtx(() => [
                   vueExports.createVNode(ChartCard, {
                     option: pieOption.value,
-                    height: "320px"
+                    height: "320px",
+                    lazy: false
                   }, null, 8, ["option"])
                 ]),
                 _: 1
@@ -511,17 +519,19 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
         }),
         _: 1
       }, _parent));
-      _push(`</div><div class="grid-row" data-v-94e61e2b>`);
+      _push(`</div><div class="grid-row" data-v-20dbbaf6>`);
       _push(serverRenderer_cjs_prodExports.ssrRenderComponent(ChartCard, {
         option: dualLineOption.value,
-        height: "340px"
+        height: "340px",
+        lazy: false
       }, null, _parent));
-      _push(`</div><div class="grid-row" data-v-94e61e2b>`);
+      _push(`</div><div class="grid-row" data-v-20dbbaf6>`);
       _push(serverRenderer_cjs_prodExports.ssrRenderComponent(ChartCard, {
         option: funnelOption.value,
-        height: "340px"
+        height: "340px",
+        lazy: false
       }, null, _parent));
-      _push(`</div><div class="grid-row" data-v-94e61e2b>`);
+      _push(`</div><div class="grid-row" data-v-20dbbaf6>`);
       _push(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_row, { gutter: 12 }, {
         default: vueExports.withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
@@ -533,13 +543,15 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                 if (_push3) {
                   _push3(serverRenderer_cjs_prodExports.ssrRenderComponent(ChartCard, {
                     option: stackedBarOption.value,
-                    height: "340px"
+                    height: "340px",
+                    lazy: false
                   }, null, _parent3, _scopeId2));
                 } else {
                   return [
                     vueExports.createVNode(ChartCard, {
                       option: stackedBarOption.value,
-                      height: "340px"
+                      height: "340px",
+                      lazy: false
                     }, null, 8, ["option"])
                   ];
                 }
@@ -554,13 +566,15 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                 if (_push3) {
                   _push3(serverRenderer_cjs_prodExports.ssrRenderComponent(ChartCard, {
                     option: barOption.value,
-                    height: "340px"
+                    height: "340px",
+                    lazy: false
                   }, null, _parent3, _scopeId2));
                 } else {
                   return [
                     vueExports.createVNode(ChartCard, {
                       option: barOption.value,
-                      height: "340px"
+                      height: "340px",
+                      lazy: false
                     }, null, 8, ["option"])
                   ];
                 }
@@ -576,7 +590,8 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                 default: vueExports.withCtx(() => [
                   vueExports.createVNode(ChartCard, {
                     option: stackedBarOption.value,
-                    height: "340px"
+                    height: "340px",
+                    lazy: false
                   }, null, 8, ["option"])
                 ]),
                 _: 1
@@ -588,7 +603,8 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
                 default: vueExports.withCtx(() => [
                   vueExports.createVNode(ChartCard, {
                     option: barOption.value,
-                    height: "340px"
+                    height: "340px",
+                    lazy: false
                   }, null, 8, ["option"])
                 ]),
                 _: 1
@@ -598,11 +614,11 @@ const _sfc_main = /* @__PURE__ */ vueExports.defineComponent({
         }),
         _: 1
       }, _parent));
-      _push(`</div><div class="grid-row" data-v-94e61e2b>`);
+      _push(`</div><div class="grid-row" data-v-20dbbaf6>`);
       _push(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_card, { shadow: "never" }, {
         header: vueExports.withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<div class="table-header" data-v-94e61e2b${_scopeId}><span data-v-94e61e2b${_scopeId}>最新订单</span>`);
+            _push2(`<div class="table-header" data-v-20dbbaf6${_scopeId}><span data-v-20dbbaf6${_scopeId}>最新订单</span>`);
             _push2(serverRenderer_cjs_prodExports.ssrRenderComponent(_component_el_button, {
               link: "",
               type: "primary"
@@ -841,7 +857,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/home.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const home = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-94e61e2b"]]);
+const home = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-20dbbaf6"]]);
 
 export { home as default };
-//# sourceMappingURL=home-Cv2qUYZ9.mjs.map
+//# sourceMappingURL=home-B0v9S2Ye.mjs.map

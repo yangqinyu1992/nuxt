@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html {{ HTML_ATTRS }}>
+  <head {{ HEAD_ATTRS }}>
+    {{ HEAD }}
+    <script>
+      // 预置主题，避免首屏闪回默认样式（需使用实际的存储键）
+      try {
+        var KEY = 'dashboard_theme';
+        var saved = localStorage.getItem(KEY);
+        var theme = (saved === 'dark' || saved === 'light') ? saved : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    </script>
+  </head>
+  <body {{ BODY_ATTRS }}>
+    {{ APP }}
+  </body>
+</html>
