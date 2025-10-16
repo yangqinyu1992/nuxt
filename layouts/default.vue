@@ -149,7 +149,8 @@ const onTabRemove = (name: string) => {
 
 <style scoped>
 .app-layout {
-  height: 100vh;
+  position: fixed;
+  inset: 0;
 }
 .app-header {
   display: flex;
@@ -172,12 +173,15 @@ const onTabRemove = (name: string) => {
 }
 .app-body {
   height: calc(100vh - 56px);
+  overflow: hidden;
 }
 .app-aside {
   border-right: 1px solid var(--border);
   background: var(--bg-card);
 }
 .app-main {
+  height: 100%;
+  overflow: auto;
   padding: 12px;
   background: var(--bg-page);
 }

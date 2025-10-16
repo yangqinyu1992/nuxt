@@ -10,7 +10,7 @@ import ChartCard from '~/components/ChartCard.vue'
 
 // ========== 退出登录 ==========
 const logout = async () => {
-  const { error } = await useFetch('/api/auth/logout', { method: 'POST' })
+  const { error } = await useFetch('/api/auth/logout', { method: 'POST', server: false })
   if (error.value) {
     ElMessage.error('退出失败，请重试')
     return
@@ -299,32 +299,32 @@ onUnmounted(() => {
       <div class="grid-row">
         <el-row :gutter="12">
           <el-col :xs="24" :md="16">
-            <ChartCard :option="lineOption" />
+            <ChartCard :option="lineOption" height="320px" :lazy="false" />
           </el-col>
           <el-col :xs="24" :md="8">
-            <ChartCard :option="pieOption" />
+            <ChartCard :option="pieOption" height="320px" :lazy="false" />
           </el-col>
         </el-row>
       </div>
 
       <!-- 中部：双轴折线 -->
       <div class="grid-row">
-        <ChartCard :option="dualLineOption" />
+        <ChartCard :option="dualLineOption" height="340px" :lazy="false" />
       </div>
 
       <!-- 中部：漏斗图 -->
       <div class="grid-row">
-        <ChartCard :option="funnelOption" />
+        <ChartCard :option="funnelOption" height="340px" :lazy="false" />
       </div>
 
       <!-- 下半区：堆叠柱 + 普通柱 -->
       <div class="grid-row">
         <el-row :gutter="12">
           <el-col :xs="24" :md="14">
-            <ChartCard :option="stackedBarOption" />
+            <ChartCard :option="stackedBarOption" height="340px" :lazy="false" />
           </el-col>
           <el-col :xs="24" :md="10">
-            <ChartCard :option="barOption" />
+            <ChartCard :option="barOption" height="340px" :lazy="false" />
           </el-col>
         </el-row>
       </div>
@@ -386,7 +386,7 @@ onUnmounted(() => {
 <style scoped>
 .dashboard {
   padding: 12px;
-  min-height: 100vh;
+  height: 100%;
   background: var(--bg-page);
   color: var(--text-1);
 }

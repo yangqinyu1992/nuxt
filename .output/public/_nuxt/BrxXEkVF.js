@@ -1,0 +1,1 @@
+import{n as e}from"#entry";import{l as t,F as n,M as o,N as r}from"./CNHhKriD.js";import"./Ck70_2Af.js";const a={style:{display:"flex","align-items":"center","justify-content":"center",height:"100vh",color:"#909399"}},_=t({__name:"index",setup(s){return n(()=>{e("/login",{replace:!0})}),(i,c)=>(r(),o("div",a," 正在跳转到登录页... "))}});export{_ as default};

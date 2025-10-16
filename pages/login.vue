@@ -36,6 +36,7 @@ const submit = () => {
     try {
       const { error } = await useFetch('/api/auth/login', {
         method: 'POST',
+        server: false,
         body: { username: form.username, password: form.password },
       })
       if (error.value) throw error.value

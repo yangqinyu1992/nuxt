@@ -1,8 +1,8 @@
 <template>
-  <el-card :shadow="shadow" class="chart-card" :class="{ 'is-loading': !isVisible }">
+  <el-card :shadow="shadow" class="chart-card" :class="{ 'is-loading': !isVisible }" :style="{ height }">
     <ClientOnly>
-      <div ref="holder" class="chart-holder">
-        <v-chart v-if="isVisible" class="chart" :option="option" autoresize />
+      <div ref="holder" class="chart-holder" :style="{ height }">
+        <VChart v-if="isVisible" class="chart" :option="option" autoresize />
         <div v-else class="chart-skeleton">
           <el-skeleton :rows="4" animated />
         </div>
@@ -13,23 +13,32 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import VChart from 'vue-echarts'
 
 interface Props {
   option: any
   shadow?: 'never' | 'always' | 'hover'
   rootMargin?: string
+  height?: string
+  lazy?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   shadow: 'never',
-  rootMargin: '100px'
+  rootMargin: '100px',
+  height: '320px',
+  lazy: true
 })
 
 const holder = ref<HTMLElement | null>(null)
-const isVisible = ref(false)
+const isVisible = ref(!props.lazy)
 let io: IntersectionObserver | null = null
 let rafId = 0
 
 onMounted(() => {
+  if (!props.lazy) {
+    isVisible.value = true
+    return
+  }
   if ('IntersectionObserver' in window) {
     io = new IntersectionObserver((entries) => {
       // raf 去抖，避免抖动
