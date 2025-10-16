@@ -1,0 +1,31 @@
+{
+  "name": "nuxt-elementplus-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "bcryptjs": "^3.0.2",
+    "echarts": "^6.0.0",
+    "element-plus": "^2.11.4",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.1",
+    "nuxt": "latest",
+    "vue-echarts": "^8.0.1"
+  },
+  "pnpm": {
+    "allowedScripts": {
+      "vue-demi": true,
+      "esbuild": true,
+      "@parcel/watcher": true
+    }
+  },
+  "devDependencies": {
+    "@nuxt/kit": "^4.1.3",
+    "@types/node": "^24.7.2"
+  }
+}

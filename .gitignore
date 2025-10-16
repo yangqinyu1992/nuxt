@@ -1,0 +1,16 @@
+﻿# Node / Nuxt
+node_modules/
+.nuxt/
+.nitro/
+dist/
+.cache/
+.temp/
+**/.DS_Store
+
+# Vite cache
+node_modules/.vite/
+node_modules/.cache/vite/
+
+# Env
+.env
+.env.*

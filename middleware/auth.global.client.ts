@@ -1,0 +1,26 @@
+import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
+
+export default defineNuxtRouteMiddleware(async (to) => {
+  // 开发环境下为避免 HMR 导致的服务端 $fetch 中断，服务端阶段直接跳过，改由客户端执行鉴权
+  if (import.meta.server) return
+
+  const publicPaths = ['/login', '/register']
+  if (publicPaths.includes(to.path)) return
+
+  // 根路径在登录后跳到 /home
+  if (to.path === '/') {
+    try {
+      await $fetch('/api/auth/me')
+      return navigateTo('/home', { replace: true })
+    } catch {
+      return navigateTo('/login', { replace: true })
+    }
+  }
+
+  // 其他受保护页面校验登录
+  try {
+    await $fetch('/api/auth/me')
+  } catch {
+    return navigateTo('/login', { replace: true })
+  }
+})
