@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+
+definePageMeta({
+  title: '个人资料'
+})
 
 interface UserListItem {
   id: string
@@ -28,6 +32,13 @@ const form = ref({
   password: ''
 })
 const formLoading = ref(false)
+
+// 判断是否为图片地址（http/https 或 data:image/）
+function isImgUrl(u?: string) {
+  if (!u) return false
+  const s = u.trim()
+  return /^https?:\/\/.+/i.test(s) || /^data:image\//i.test(s)
+}
 
 // 拉取列表
 async function fetchList() {
@@ -104,6 +115,21 @@ async function submitForm() {
     return
   }
 
+  // 头像校验：允许为空；否则必须为 http/https 或 data:image/，且不可为邮箱
+  {
+    const avatarStr = form.value.avatar.trim()
+    if (avatarStr) {
+      if (avatarStr.includes('@')) {
+        ElMessage.warning('头像URL不应填写邮箱，请使用图片地址')
+        return
+      }
+      const ok = /^(https?:\/\/.+)|(^data:image\/)/i.test(avatarStr)
+      if (!ok) {
+        ElMessage.warning('请输入有效的头像URL（http/https 或 data:image/）')
+        return
+      }
+    }
+  }
   formLoading.value = true
   try {
     if (editingId.value) {
@@ -164,11 +190,19 @@ async function onDelete(row: UserListItem) {
 
 onMounted(() => {
   fetchList()
+  if (typeof window !== 'undefined') {
+    window.addEventListener('refresh-profile', fetchList as any)
+  }
+})
+onBeforeUnmount(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('refresh-profile', fetchList as any)
+  }
 })
 </script>
 
 <template>
-  <div class="user-page design-flat">
+  <div class="user-page">
     <div class="toolbar">
       <el-input
         v-model="keyword"
@@ -190,9 +224,10 @@ onMounted(() => {
             <span>{{ row.name || '-' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="头像" min-width="120">
+        <el-table-column label="头像" min-width="160">
           <template #default="{ row }">
-            <img v-if="row.avatar" :src="row.avatar" class="avatar" alt="avatar" />
+            <img v-if="isImgUrl(row.avatar)" :src="row.avatar" class="avatar" alt="avatar" />
+            <a v-else-if="row.avatar && row.avatar.includes('@')" :href="`mailto:${row.avatar}`">{{ row.avatar }}</a>
             <span v-else>-</span>
           </template>
         </el-table-column>
@@ -248,7 +283,7 @@ onMounted(() => {
 
 <style scoped>
 .user-page {
-  padding: 16px;
+  padding: 12px 0;
 }
 .toolbar {
   display: flex;
@@ -272,7 +307,7 @@ onMounted(() => {
   padding-top: 12px;
 }
 /* 扁平化+圆角设计（仅对本页生效，基于 design-flat 命名空间） */
-.design-flat {
+.user-page {
   /* 可按需定制色板 */
   --df-border: #eef0f3;
   --df-border-strong: #e6e9ef;
@@ -364,7 +399,11 @@ onMounted(() => {
 
   /* 工具栏与头像图片 */
   .toolbar {
-    background: transparent;
+    background: var(--df-bg-card);
+    border: 1px solid var(--df-border);
+    border-radius: 10px; /* 预设B：圆角10 */
+    padding: 12px;       /* 预设B：上下内边距12 */
+    box-shadow: var(--df-shadow); /* 预设B：中等阴影 */
   }
   .avatar {
     border-radius: 10px;

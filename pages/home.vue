@@ -89,8 +89,8 @@ const lineOption = computed(() => ({
   title: { text: '近七日访问趋势', left: 'center', top: 8, textStyle: { fontSize: 14, color: textColor.value } },
   tooltip: { trigger: 'axis' },
   toolbox: { right: 10, feature: { saveAsImage: {}, dataZoom: {}, magicType: { type: ['line', 'bar'] } } },
-  dataZoom: [{ type: 'inside' }, { type: 'slider' }],
-  grid: { left: 40, right: 20, top: 50, bottom: 30 },
+  dataZoom: [{ type: 'inside' }, { type: 'slider', height: 10, handleSize: '80%', fillerColor: 'rgba(64,158,255,0.25)', backgroundColor: 'rgba(64,158,255,0.08)' }],
+  grid: { left: 40, right: 20, top: 50, bottom: 40, containLabel: true },
   xAxis: {
     type: 'category',
     boundaryGap: false,
@@ -141,8 +141,8 @@ const barOption = computed(() => ({
   tooltip: { trigger: 'axis' },
   toolbox: { right: 10, feature: { saveAsImage: {}, dataZoom: {}, magicType: { type: ['line', 'bar'] } } },
   brush: { toolbox: ['rect', 'clear'], xAxisIndex: 'all' },
-  dataZoom: [{ type: 'inside' }, { type: 'slider' }],
-  grid: { left: 40, right: 20, top: 50, bottom: 30 },
+  dataZoom: [{ type: 'inside' }, { type: 'slider', height: 10, handleSize: '80%', fillerColor: 'rgba(64,158,255,0.25)', backgroundColor: 'rgba(64,158,255,0.08)' }],
+  grid: { left: 40, right: 20, top: 50, bottom: 40, containLabel: true },
   xAxis: {
     type: 'category',
     data: ['家电','数码','美妆','服饰','食品','母婴'],
@@ -159,7 +159,7 @@ const barOption = computed(() => ({
     type: 'bar',
     barWidth: 18,
     data: [620, 732, 701, 534, 690, 830],
-    itemStyle: { color: '#20C997' }
+    itemStyle: { color: '#20C997', borderRadius: [6, 6, 0, 0] }
   }]
 }))
 
@@ -168,8 +168,8 @@ const dualLineOption = computed(() => ({
   title: { text: 'UV / PV 趋势（双轴）', left: 'center', top: 8, textStyle: { fontSize: 14, color: textColor.value } },
   tooltip: { trigger: 'axis' },
   toolbox: { right: 10, feature: { saveAsImage: {}, dataZoom: {} } },
-  dataZoom: [{ type: 'inside' }, { type: 'slider' }],
-  grid: { left: 50, right: 50, top: 50, bottom: 30 },
+  dataZoom: [{ type: 'inside' }, { type: 'slider', height: 10, handleSize: '80%', fillerColor: 'rgba(64,158,255,0.25)', backgroundColor: 'rgba(64,158,255,0.08)' }],
+  grid: { left: 50, right: 50, top: 50, bottom: 50, containLabel: true },
   legend: { top: 28, textStyle: { color: axisColor.value } },
   xAxis: {
     type: 'category',
@@ -194,8 +194,8 @@ const stackedBarOption = computed(() => ({
   legend: { top: 28, textStyle: { color: axisColor.value } },
   toolbox: { right: 10, feature: { saveAsImage: {}, dataZoom: {} } },
   brush: { toolbox: ['rect', 'clear'], xAxisIndex: 'all' },
-  dataZoom: [{ type: 'inside' }, { type: 'slider' }],
-  grid: { left: 50, right: 20, top: 60, bottom: 30 },
+  dataZoom: [{ type: 'inside' }, { type: 'slider', height: 10, handleSize: '80%', fillerColor: 'rgba(64,158,255,0.25)', backgroundColor: 'rgba(64,158,255,0.08)' }],
+  grid: { left: 50, right: 20, top: 60, bottom: 50, containLabel: true },
   xAxis: {
     type: 'category',
     data: ['1月','2月','3月','4月','5月','6月'],
@@ -208,10 +208,10 @@ const stackedBarOption = computed(() => ({
     axisLabel: { color: axisColor.value }
   },
   series: [
-    { name: '官网', type: 'bar', stack: 'total', emphasis: { focus: 'series' }, itemStyle: { color: '#409EFF' }, data: [320, 302, 301, 334, 390, 330] },
-    { name: 'App', type: 'bar', stack: 'total', emphasis: { focus: 'series' }, itemStyle: { color: '#67C23A' }, data: [120, 132, 101, 134, 90, 230] },
-    { name: '小程序', type: 'bar', stack: 'total', emphasis: { focus: 'series' }, itemStyle: { color: '#E6A23C' }, data: [220, 182, 191, 234, 290, 330] },
-    { name: '第三方', type: 'bar', stack: 'total', emphasis: { focus: 'series' }, itemStyle: { color: '#F56C6C' }, data: [150, 212, 201, 154, 190, 120] }
+    { name: '官网', type: 'bar', stack: 'total', emphasis: { focus: 'series' }, itemStyle: { color: '#409EFF', borderRadius: [6, 6, 0, 0] }, data: [320, 302, 301, 334, 390, 330] },
+    { name: 'App', type: 'bar', stack: 'total', emphasis: { focus: 'series' }, itemStyle: { color: '#67C23A', borderRadius: [6, 6, 0, 0] }, data: [120, 132, 101, 134, 90, 230] },
+    { name: '小程序', type: 'bar', stack: 'total', emphasis: { focus: 'series' }, itemStyle: { color: '#E6A23C', borderRadius: [6, 6, 0, 0] }, data: [220, 182, 191, 234, 290, 330] },
+    { name: '第三方', type: 'bar', stack: 'total', emphasis: { focus: 'series' }, itemStyle: { color: '#F56C6C', borderRadius: [6, 6, 0, 0] }, data: [150, 212, 201, 154, 190, 120] }
   ]
 }))
 
@@ -261,11 +261,6 @@ onUnmounted(() => {
         <p>核心业务指标总览 · 实时洞察</p>
       </div>
       <div class="header-actions">
-        
-        <el-button @click="toggleFullscreen">{{ isFullscreen ? '退出全屏' : '全屏展示' }}</el-button>
-        <el-divider direction="vertical" />
-        <el-button @click="logout">退出登录</el-button>
-        <el-button type="primary">刷新数据</el-button>
       </div>
     </div>
 
@@ -423,6 +418,8 @@ onUnmounted(() => {
   height: 320px;
   background: var(--bg-card);
   border-color: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
 }
 .h-340 { height: 340px; }
 .chart { width: 100%; height: 100%; }
