@@ -30,7 +30,7 @@
 
 /* Card */
 .design-flat .el-card {
-  border-radius: 12px;
+  border-radius: 6px;
   border: 1px solid var(--df-border);
   box-shadow: var(--df-shadow);
   background: var(--df-bg-card);
@@ -43,7 +43,7 @@
 
 /* Input */
 .design-flat .el-input__wrapper {
-  border-radius: 10px !important;
+  border-radius: 6px !important;
   background: var(--df-bg-soft);
   box-shadow: none !important;
   border: 1px solid transparent;
@@ -61,7 +61,7 @@
 
 /* Button */
 .design-flat .el-button {
-  border-radius: 10px !important;
+  border-radius: 6px !important;
   box-shadow: none !important;
 }
 .design-flat .el-button.is-plain {
@@ -74,7 +74,7 @@
   --el-table-border-color: var(--df-border);
   --el-table-header-bg-color: var(--df-header);
   --el-table-row-hover-bg-color: var(--df-hover);
-  border-radius: 12px;
+  border-radius: 6px;
   overflow: hidden;
 }
 .design-flat .el-table .cell {
@@ -94,13 +94,13 @@
   padding: 8px 0 0;
 }
 .design-flat .el-pagination .el-input__wrapper {
-  border-radius: 10px;
+  border-radius: 6px;
   background: #fff;
 }
 
 /* Dialog */
 .design-flat .el-dialog {
-  border-radius: 12px !important;
+  border-radius: 6px !important;
   box-shadow: var(--df-shadow-strong) !important;
 }
 .design-flat .el-dialog__header {
@@ -126,7 +126,7 @@
 
 /* Misc */
 .design-flat .avatar {
-  border-radius: 10px;
+  border-radius: 6px;
 }
 
 /* ========================= */

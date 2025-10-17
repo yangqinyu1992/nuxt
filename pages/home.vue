@@ -264,12 +264,12 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- 全屏网格布局 -->
-    <div class="grid">
+    <!-- 响应式网格布局 -->
+    <div class="grid-container">
       <!-- 统计卡片 -->
-      <div class="grid-row">
+      <div class="grid-section">
         <el-row :gutter="12">
-          <el-col :xs="12" :sm="12" :md="6" v-for="(card, idx) in statCards" :key="idx">
+          <el-col :xs="12" :sm="6" :md="6" v-for="(card, idx) in statCards" :key="idx">
             <el-card shadow="hover" class="stat-card">
               <div class="stat">
                 <div class="label">{{ card.title }}</div>
@@ -282,41 +282,41 @@ onUnmounted(() => {
       </div>
 
       <!-- 上半区：折线 + 饼图 -->
-      <div class="grid-row">
+      <div class="grid-section">
         <el-row :gutter="12">
-          <el-col :xs="24" :md="16">
-            <ChartCard :option="lineOption" height="320px" :lazy="false" />
+          <el-col :xs="24" :sm="24" :md="16">
+            <ChartCard :option="lineOption" height="320px" :lazy="false" :key="chartKey" />
           </el-col>
-          <el-col :xs="24" :md="8">
-            <ChartCard :option="pieOption" height="320px" :lazy="false" />
+          <el-col :xs="24" :sm="24" :md="8">
+            <ChartCard :option="pieOption" height="320px" :lazy="false" :key="chartKey" />
           </el-col>
         </el-row>
       </div>
 
       <!-- 中部：双轴折线 -->
-      <div class="grid-row">
-        <ChartCard :option="dualLineOption" height="340px" :lazy="false" />
+      <div class="grid-section">
+        <ChartCard :option="dualLineOption" height="340px" :lazy="false" :key="chartKey" />
       </div>
 
       <!-- 中部：漏斗图 -->
-      <div class="grid-row">
-        <ChartCard :option="funnelOption" height="340px" :lazy="false" />
+      <div class="grid-section">
+        <ChartCard :option="funnelOption" height="340px" :lazy="false" :key="chartKey" />
       </div>
 
       <!-- 下半区：堆叠柱 + 普通柱 -->
-      <div class="grid-row">
+      <div class="grid-section">
         <el-row :gutter="12">
-          <el-col :xs="24" :md="14">
-            <ChartCard :option="stackedBarOption" height="340px" :lazy="false" />
+          <el-col :xs="24" :sm="24" :md="14">
+            <ChartCard :option="stackedBarOption" height="340px" :lazy="false" :key="chartKey" />
           </el-col>
-          <el-col :xs="24" :md="10">
-            <ChartCard :option="barOption" height="340px" :lazy="false" />
+          <el-col :xs="24" :sm="24" :md="10">
+            <ChartCard :option="barOption" height="340px" :lazy="false" :key="chartKey" />
           </el-col>
         </el-row>
       </div>
 
       <!-- 表格 -->
-      <div class="grid-row">
+      <div class="grid-section">
         <el-card shadow="never">
           <template #header>
             <div class="table-header">
@@ -361,21 +361,87 @@ onUnmounted(() => {
   height: 100%;
   background: var(--bg-page);
   color: var(--text-1);
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
 }
+
+/* 移动端响应式优化 */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 8px;
+    height: 100%;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .title h2 {
+    font-size: 20px;
+  }
+  
+  .title p {
+    font-size: 12px;
+  }
+  
+  .grid-container {
+    gap: 16px;
+  }
+  
+  .stat-card :deep(.el-card__body) {
+    padding: 12px;
+  }
+  
+  .stat .value {
+    font-size: 20px;
+  }
+  
+  .stat .trend {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 6px;
+  }
+  
+  .grid-container {
+    gap: 12px;
+  }
+  
+  .stat-card {
+    margin-bottom: 8px;
+  }
+  
+  .title h2 {
+    font-size: 18px;
+  }
+}
+
 .header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   margin-bottom: 12px;
+  flex-shrink: 0;
 }
+
 .title h2 {
   margin: 0 0 4px;
+  font-size: 24px;
 }
+
 .title p {
   margin: 0;
   color: var(--text-2);
   font-size: 13px;
 }
+
 .header-actions {
   display: flex;
   gap: 8px;
@@ -383,22 +449,30 @@ onUnmounted(() => {
 }
 
 /* 网格容器 */
-.grid {
-  display: grid;
-  grid-auto-rows: minmax(min-content, max-content);
-  gap: 12px;
+.grid-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: visible;
+  min-height: 0;
 }
-.grid-row {
+
+.grid-section {
   width: 100%;
+  flex-shrink: 0;
 }
 
 .stat-card :deep(.el-card__body) {
   padding: 16px;
 }
+
 .stat-card {
   background: var(--bg-card);
   border-color: var(--border);
+  height: 100%;
 }
+
 .stat-card :deep(.el-card__body) {
   background: var(--bg-card);
 }
@@ -409,40 +483,98 @@ onUnmounted(() => {
   gap: 8px 12px;
   align-items: baseline;
 }
-.stat .label { color: var(--text-2); }
-.stat .value { font-size: 24px; font-weight: 700; }
-.stat .trend { color: #20C997; }
 
-/* 图表卡片 */
-.chart-card {
-  height: 320px;
+.stat .label { 
+  color: var(--text-2); 
+  font-size: 14px;
+}
+
+.stat .value { 
+  font-size: 24px; 
+  font-weight: 700; 
+}
+
+.stat .trend { 
+  color: #20C997; 
+  font-size: 12px;
+  text-align: right;
+}
+
+/* 图表卡片响应式优化 */
+:deep(.chart-card) {
   background: var(--bg-card);
   border-color: var(--border);
-  border-radius: 12px;
+  border-radius: 6px;
   overflow: hidden;
+  height: 100%;
 }
-.h-340 { height: 340px; }
-.chart { width: 100%; height: 100%; }
+
+:deep(.chart-container) {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+}
 
 /* 表格卡片适配主题 */
 :deep(.el-card) {
   background: var(--bg-card);
   border-color: var(--border);
 }
+
 :deep(.el-table) {
   --el-table-bg-color: var(--bg-card);
   --el-table-tr-bg-color: var(--bg-card);
   --el-table-text-color: var(--text-1);
   --el-table-border-color: var(--border);
 }
+
 :deep(.el-table th) {
   color: var(--text-2);
 }
+
 :deep(.el-table .cell) {
   color: var(--text-1);
 }
 
+/* 移动端图表高度调整 */
 @media (max-width: 768px) {
-  .chart-card { height: 260px; }
+  :deep(.chart-card) {
+    height: 280px;
+  }
+  
+  .stat-card .stat {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 4px;
+  }
+  
+  .stat .trend {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  :deep(.chart-card) {
+    height: 240px;
+  }
+  
+  .stat .value {
+    font-size: 20px;
+  }
+  
+  .stat .label {
+    font-size: 12px;
+  }
+}
+
+/* 确保Element Plus组件在小屏幕下正确换行 */
+:deep(.el-col) {
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  :deep(.el-col) {
+    margin-bottom: 16px;
+  }
 }
 </style>

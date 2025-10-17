@@ -2,7 +2,7 @@
   <el-card :shadow="shadow" class="chart-card" :class="{ 'is-loading': !isVisible }" :style="{ height }">
     <ClientOnly>
       <div ref="holder" class="chart-holder" :style="{ height }">
-        <VChart v-if="isVisible" class="chart" :option="option" autoresize />
+        <VChart v-if="isVisible" class="chart" :option="option" autoresize @chart-ready="onChartReady" />
         <div v-else class="chart-skeleton">
           <el-skeleton :rows="4" animated />
         </div>
@@ -31,6 +31,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const holder = ref<HTMLElement | null>(null)
 const isVisible = ref(!props.lazy)
+const chartInstance = ref<any>(null)
 let io: IntersectionObserver | null = null
 let rafId = 0
 
@@ -57,12 +58,28 @@ onMounted(() => {
     // 降级：无 IO 则直接渲染
     isVisible.value = true
   }
+
+  // 添加窗口大小变化监听
+  window.addEventListener('resize', handleResize)
 })
+
+// 处理窗口大小变化
+const handleResize = () => {
+  if (chartInstance.value) {
+    chartInstance.value.resize()
+  }
+}
+
+// 监听图表实例变化
+const onChartReady = (chart: any) => {
+  chartInstance.value = chart
+}
 
 onBeforeUnmount(() => {
   if (io && holder.value) io.unobserve(holder.value)
   io = null
   if (rafId) cancelAnimationFrame(rafId)
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 

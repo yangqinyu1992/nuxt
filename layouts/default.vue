@@ -149,7 +149,7 @@ const loadUser = async () => {
   try {
     const { data, error } = await useFetch('/api/users/me', { server: false })
     if (!error.value && data.value) {
-      userName.value = (data.value.nickname || data.value.name || userName.value)
+      userName.value = (data.value.name || userName.value)
       userAvatar.value = (data.value.avatar || userAvatar.value)
     }
   } catch {}
@@ -184,19 +184,14 @@ const submitEdit = async () => {
     return
   }
   try {
-    const { error, data } = await useFetch('/api/users/me', {
-      method: 'PATCH',
+    const response = await $fetch('/api/users/me', {
+      method: 'POST',
       body: {
         avatar: editForm.value.avatar?.trim() || null,
-        nickname: editForm.value.nickname.trim()
-      },
-      server: false
+        name: editForm.value.nickname.trim()
+      }
     })
-    if (error.value) {
-      ElMessage.error('保存失败，请重试')
-      return
-    }
-    const updated: any = data.value || {}
+    const updated: any = response || {}
     userName.value = (updated.nickname ?? editForm.value.nickname.trim())
     userAvatar.value = (updated.avatar ?? (editForm.value.avatar?.trim() || userAvatar.value))
     editDialogVisible.value = false
@@ -394,6 +389,91 @@ const onTabRemove = (name: string) => {
   position: fixed;
   inset: 0;
 }
+
+/* 移动端响应式布局 */
+@media (max-width: 992px) {
+  .app-aside {
+    position: fixed !important;
+    z-index: 1000;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .app-aside.is-collapsed {
+    transform: translateX(-100%);
+  }
+  
+  .app-aside:not(.is-collapsed) {
+    transform: translateX(0);
+  }
+  
+  .content-wrap {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  .app-header {
+    padding: 0 8px;
+  }
+  
+  .header-right {
+    gap: 4px;
+  }
+  
+  .header-right .icon-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .collapse-btn {
+    position: fixed;
+    left: 8px;
+    top: 8px;
+    z-index: 1001;
+    background: var(--bg-card);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    height: 48px !important;
+    padding: 0 6px;
+  }
+  
+  .header-right {
+    gap: 2px;
+  }
+  
+  .tabs {
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+  
+  .tabs .el-tabs__item {
+    padding: 0 6px;
+    font-size: 12px;
+  }
+  
+  .app-main {
+    padding: 0 8px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-right .el-button:not(.icon-btn) {
+    display: none;
+  }
+  
+  .brand-text {
+    display: none;
+  }
+  
+  .tabs .el-tabs__nav-scroll {
+    padding: 0 4px;
+  }
+}
 .app-header {
   display: flex;
   align-items: center;
@@ -425,10 +505,30 @@ const onTabRemove = (name: string) => {
   overflow: hidden; /* 禁止外层滚动，滚动只在内部菜单区域发生 */
 }
 .app-main {
-  height: auto;
-  overflow: auto;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 0 16px 16px; /* 顶部0，让 Tabs 贴在 el-main 内部顶部 */
   background: var(--bg-page);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main > .tabs {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-page);
+  border-bottom: 1px solid var(--border);
+  margin: 0 -16px;
+  padding: 0 16px;
+}
+
+.app-main > :not(.tabs) {
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
 }
 
 /* 面包屑美化 */

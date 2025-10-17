@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref, onMounted, onBeforeUnmount, h } from 'vue'
+import { ElMessage, ElMessageBox, ElButton, ElImage } from 'element-plus'
+import ConfigTable from '~/components/ConfigTable.vue'
+import SearchForm from '~/components/SearchForm.vue'
 
 definePageMeta({
   title: '个人资料'
@@ -32,6 +34,81 @@ const form = ref({
   password: ''
 })
 const formLoading = ref(false)
+
+// 搜索字段配置
+const searchFields = [
+  {
+    type: 'input' as const,
+    prop: 'keyword',
+    label: '搜索',
+    placeholder: '搜索用户名/昵称',
+    width: '240px',
+    clearable: true
+  }
+]
+
+// 搜索按钮配置
+const searchButtons = [
+  {
+    type: 'success' as const,
+    text: '新建',
+    icon: 'Plus'
+  }
+]
+
+// 表格列配置
+const tableColumns = [
+  {
+    prop: 'username',
+    label: '用户名',
+    minWidth: '140'
+  },
+  {
+    prop: 'name',
+    label: '昵称',
+    minWidth: '120'
+  },
+  {
+    label: '头像',
+    minWidth: '160',
+    render: (scope: any) => {
+      const avatar = scope.row.avatar
+      if (!avatar || !isImgUrl(avatar)) {
+        return h('span', { class: 'text-gray-400' }, '-')
+      }
+      return h(ElImage, {
+        class: 'avatar',
+        src: avatar,
+        previewSrcList: [avatar],
+        hideOnClickModal: true
+      })
+    }
+  },
+  {
+    prop: 'createdAt',
+    label: '创建时间',
+    minWidth: '180'
+  },
+  {
+    label: '操作',
+    width: '180',
+    fixed: 'right' as const,
+    render: (scope: any) => {
+      return h('div', { class: 'flex gap-2' }, [
+        h(ElButton, {
+          type: 'primary',
+          size: 'small',
+          onClick: () => openEdit(scope.row)
+        }, '编辑'),
+        h(ElButton, {
+          type: 'danger',
+          size: 'small',
+          onClick: () => onDelete(scope.row)
+        }, '删除')
+      ])
+    }
+  }
+]
 
 // 判断是否为图片地址（http/https 或 data:image/）
 function isImgUrl(u?: string) {
@@ -69,6 +146,12 @@ function onReset() {
   keyword.value = ''
   page.value = 1
   fetchList()
+}
+
+function handleButtonClick(button: any) {
+  if (button.text === '新建') {
+    openCreate()
+  }
 }
 
 function onPageChange(p: number) {
@@ -203,46 +286,31 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="user-page">
-    <div class="toolbar">
-      <el-input
-        v-model="keyword"
-        placeholder="搜索用户名/昵称"
-        clearable
-        class="w240"
-        @keyup.enter="onSearch"
-      />
-      <el-button type="primary" @click="onSearch">查询</el-button>
-      <el-button @click="onReset">重置</el-button>
-      <el-button type="success" @click="openCreate">新建</el-button>
-    </div>
+    <!-- 搜索表单 -->
+    <SearchForm
+      :fields="searchFields"
+      :buttons="searchButtons"
+      @search="onSearch"
+      @reset="onReset"
+      @button-click="handleButtonClick"
+    />
 
     <el-card shadow="never">
-      <el-table :data="list" v-loading="loading" border>
-        <el-table-column prop="username" label="用户名" min-width="140" />
-        <el-table-column prop="name" label="昵称" min-width="120">
-          <template #default="{ row }">
-            <span>{{ row.name || '-' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="头像" min-width="160">
-          <template #default="{ row }">
-            <img v-if="isImgUrl(row.avatar)" :src="row.avatar" class="avatar" alt="avatar" />
-            <a v-else-if="row.avatar && row.avatar.includes('@')" :href="`mailto:${row.avatar}`">{{ row.avatar }}</a>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间" min-width="180">
-          <template #default="{ row }">
-            {{ new Date(row.createdAt).toLocaleString() }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
-          <template #default="{ row }">
-            <el-button type="primary" text @click="openEdit(row)">编辑</el-button>
-            <el-button type="danger" text @click="onDelete(row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <!-- 配置化表格 -->
+      <ConfigTable
+        :data="list"
+        :columns="tableColumns"
+        :loading="loading"
+        :auto-height="true"
+        :border="true"
+        :auto-height-options="{
+          offset: 40,
+          minHeight: 300,
+          maxHeight: 1200,
+          includePagination: true,
+          paginationSelector: '.pager'
+        }"
+      />
 
       <div class="pager">
         <el-pagination
@@ -320,7 +388,7 @@ onBeforeUnmount(() => {
 
   /* 卡片 */
   :deep(.el-card) {
-    border-radius: 12px;
+    border-radius: 6px;
     border: 1px solid var(--df-border);
     box-shadow: var(--df-shadow);
     background: var(--df-bg-card);
@@ -333,7 +401,7 @@ onBeforeUnmount(() => {
 
   /* 输入框（更扁平、圆角） */
   :deep(.el-input__wrapper) {
-    border-radius: 10px;
+    border-radius: 6px;
     background: var(--df-bg-soft);
     box-shadow: none;
     border: 1px solid transparent;
@@ -350,7 +418,7 @@ onBeforeUnmount(() => {
 
   /* 按钮（圆角扁平） */
   :deep(.el-button) {
-    border-radius: 10px;
+    border-radius: 6px;
     box-shadow: none;
   }
   :deep(.el-button.is-plain) {
@@ -363,7 +431,7 @@ onBeforeUnmount(() => {
     --el-table-border-color: var(--df-border);
     --el-table-header-bg-color: var(--df-header);
     --el-table-row-hover-bg-color: var(--df-hover);
-    border-radius: 12px;
+    border-radius: 6px;
     overflow: hidden;
   }
   :deep(.el-table .cell) {
@@ -378,13 +446,13 @@ onBeforeUnmount(() => {
     padding: 8px 0 0;
   }
   :deep(.el-pagination .el-input__wrapper) {
-    border-radius: 10px;
+    border-radius: 6px;
     background: #fff;
   }
 
   /* 弹窗（圆角与分割线） */
   :deep(.el-dialog) {
-    border-radius: 12px;
+    border-radius: 6px;
     box-shadow: var(--df-shadow-strong);
   }
   :deep(.el-dialog__header) {
@@ -398,15 +466,9 @@ onBeforeUnmount(() => {
   }
 
   /* 工具栏与头像图片 */
-  .toolbar {
-    background: var(--df-bg-card);
-    border: 1px solid var(--df-border);
-    border-radius: 10px; /* 预设B：圆角10 */
-    padding: 12px;       /* 预设B：上下内边距12 */
-    box-shadow: var(--df-shadow); /* 预设B：中等阴影 */
-  }
+
   .avatar {
-    border-radius: 10px;
+    border-radius: 6px;
   }
 }
 </style>
