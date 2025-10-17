@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, defineAsyncComponent } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useFetch, navigateTo } from 'nuxt/app'
+
 
 definePageMeta({
   title: '仪表盘'
 })
-import ChartCard from '~/components/ChartCard.vue'
+
+// 懒加载图表组件
+const ChartCard = defineAsyncComponent(() => import('~/components/ChartCard.vue'))
 
 // ========== 退出登录 ==========
 const logout = async () => {
@@ -112,6 +114,41 @@ const lineOption = computed(() => ({
     itemStyle: { color: '#4C6EF5' }
   }]
 }))
+
+// 懒加载ECharts模块
+const loadECharts = async () => {
+  const echarts = await import('echarts/core')
+  const { CanvasRenderer } = await import('echarts/renderers')
+  const { LineChart, BarChart, PieChart } = await import('echarts/charts')
+  const {
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+    GridComponent
+  } = await import('echarts/components')
+  
+  echarts.use([
+    CanvasRenderer,
+    LineChart,
+    BarChart,
+    PieChart,
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+    GridComponent
+  ])
+  
+  return echarts
+}
+
+// 在组件挂载后预加载ECharts
+onMounted(async () => {
+  // 小延时以平滑展示，真实项目可与首个数据接口完成后联动
+  setTimeout(() => (pageLoading.value = false), 250)
+  
+  // 预加载ECharts模块
+  await loadECharts()
+})
 
 // ========== 饼图（渠道占比） ==========
 const pieOption = computed(() => ({

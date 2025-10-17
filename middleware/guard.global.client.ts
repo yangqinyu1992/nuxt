@@ -1,4 +1,4 @@
-import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app'
+
 
 /**
  * 全局登录校验（客户端）

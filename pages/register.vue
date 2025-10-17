@@ -3,7 +3,6 @@ definePageMeta({ layout: false })
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
-import { useFetch, navigateTo } from 'nuxt/app'
 
 interface RegisterForm {
   username: string

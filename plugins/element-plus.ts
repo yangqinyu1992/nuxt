@@ -1,11 +1,38 @@
-import { defineNuxtPlugin } from 'nuxt/app'
+
 import ElementPlus from 'element-plus'
-import * as ElIconModules from '@element-plus/icons-vue'
+
+// 只引入实际使用的图标
+import {
+  HomeFilled,
+  Fold,
+  Expand,
+  User,
+  Setting,
+  FullScreen,
+  Refresh,
+  SwitchButton,
+  Expand as ExpandIcon,
+  Fold as FoldIcon
+} from '@element-plus/icons-vue'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.use(ElementPlus)
-  for (const [key, component] of Object.entries(ElIconModules)) {
-    // 全量注册图标组件，方便直接使用
-    nuxtApp.vueApp.component(key, component as any)
+  
+  // 按需注册图标组件
+  const icons = {
+    HomeFilled,
+    Fold,
+    Expand,
+    User,
+    Setting,
+    FullScreen,
+    Refresh,
+    SwitchButton,
+    ExpandIcon,
+    FoldIcon
   }
+  
+  Object.entries(icons).forEach(([key, component]) => {
+    nuxtApp.vueApp.component(key, component)
+  })
 })

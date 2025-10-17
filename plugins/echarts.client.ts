@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from 'nuxt/app'
+
 import VChart from 'vue-echarts'
 
 // ECharts v6 按需引入核心与组件

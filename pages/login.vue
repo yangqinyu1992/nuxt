@@ -3,7 +3,6 @@ definePageMeta({ layout: false })
 import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
-import { useCookie, navigateTo, useFetch } from 'nuxt/app'
 
 interface LoginForm {
   username: string

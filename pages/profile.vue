@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, h } from 'vue'
+import { ref, onMounted, onBeforeUnmount, h, defineAsyncComponent } from 'vue'
 import { ElMessage, ElMessageBox, ElButton, ElImage } from 'element-plus'
-import ConfigTable from '~/components/ConfigTable.vue'
-import SearchForm from '~/components/SearchForm.vue'
+
+// 懒加载组件
+const ConfigTable = defineAsyncComponent(() => import('~/components/ConfigTable.vue'))
+const SearchForm = defineAsyncComponent(() => import('~/components/SearchForm.vue'))
 
 definePageMeta({
   title: '个人资料'

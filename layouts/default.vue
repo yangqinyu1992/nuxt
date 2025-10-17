@@ -22,7 +22,6 @@
           <el-button text circle class="collapse-btn" @click="toggleAside" :title="isCollapsed ? '展开侧边栏' : '折叠侧边栏'">
             <el-icon><component :is="isCollapsed ? 'Expand' : 'Fold'" /></el-icon>
           </el-button>
-
         </div>
         <div class="header-right">
           <!-- 全屏 -->
@@ -123,7 +122,6 @@ import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { HomeFilled, Fold, Expand, ArrowRight, User, Setting, FullScreen, Refresh, SwitchButton } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { useFetch, navigateTo, refreshNuxtData } from 'nuxt/app'
 import logo from '~/assets/logo.svg?url'
 
 const route = useRoute()
@@ -185,7 +183,7 @@ const submitEdit = async () => {
   }
   try {
     const response = await $fetch('/api/users/me', {
-      method: 'POST',
+      method: 'post',
       body: {
         avatar: editForm.value.avatar?.trim() || null,
         name: editForm.value.nickname.trim()
@@ -390,6 +388,8 @@ const onTabRemove = (name: string) => {
   inset: 0;
 }
 
+
+
 /* 移动端响应式布局 */
 @media (max-width: 992px) {
   .app-aside {
@@ -519,7 +519,7 @@ const onTabRemove = (name: string) => {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--bg-page);
+  background: var(--bg-card);
   border-bottom: 1px solid var(--border);
   margin: 0 -16px;
   padding: 0 16px;
@@ -693,7 +693,7 @@ const onTabRemove = (name: string) => {
   color: var(--text-1);
 }
 .tabs .el-tabs__nav-scroll {
-  background: #fff; /* 顶部标签栏白色背景，突出功能 */
+  background: var(--bg-card); /* 使用系统卡片背景色 */
   border-bottom: none; /* 去掉底部分割线 */
   padding: 0 10px;     /* 将左右留白移到内部滚动容器 */
 }
@@ -706,7 +706,7 @@ const onTabRemove = (name: string) => {
   position: sticky;    /* 预设B：粘性置顶 */
   /* 去掉 top 偏移 */
   z-index: 5;          /* 保证覆盖内容区域 */
-  background: #fff;    /* 与标签栏背景一致，突出功能 */
+  background: var(--bg-card);    /* 使用系统卡片背景色 */
 }
 .tabs .el-tabs__header {
   margin: 0;
