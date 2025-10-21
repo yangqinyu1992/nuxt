@@ -9,7 +9,6 @@ interface RegisterForm {
   password: string
   confirm: string
   name: string
-  avatar: string
 }
 
 const formRef = ref()
@@ -18,14 +17,12 @@ const form = reactive<RegisterForm>({
   password: '',
   confirm: '',
   name: '',
-  avatar: '',
 })
 
 const rules = {
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   name: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
-  avatar: [{ type: 'url', message: '请输入有效的头像URL', trigger: 'blur' }],
   confirm: [
     { required: true, message: '请再次输入密码', trigger: 'blur' },
     {
@@ -49,7 +46,7 @@ const submit = async () => {
       const { error } = await useFetch('/api/auth/register', {
         method: 'POST',
         server: false,
-        body: { username: form.username, password: form.password, name: form.name, avatar: form.avatar },
+        body: { username: form.username, password: form.password, name: form.name }
       })
       if (error.value) throw error.value
       ElMessage.success('注册成功，已登录')
@@ -82,7 +79,7 @@ const submit = async () => {
             <div class="logo">EP</div>
             <div class="title">
               <h2>用户注册</h2>
-              <p>请输入账号与密码，支持设置昵称和头像</p>
+              <p>请输入账号与密码，支持设置昵称</p>
             </div>
           </div>
 
@@ -93,13 +90,6 @@ const submit = async () => {
             <el-form-item label="昵称" prop="name">
               <el-input v-model="form.name" placeholder="请输入昵称" clearable />
             </el-form-item>
-            <el-form-item label="头像URL" prop="avatar">
-              <el-input v-model="form.avatar" placeholder="请输入头像图片链接（可选）" clearable />
-            </el-form-item>
-            <div v-if="form.avatar" style="margin: -4px 0 8px 0; display:flex; align-items:center; gap:12px;">
-              <span style="font-size:13px;color:#909399;">头像预览：</span>
-              <img :src="form.avatar" alt="avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid #ebeef5;" />
-            </div>
 
             <el-form-item label="密码" prop="password">
               <el-input v-model="form.password" type="password" placeholder="请输入密码" :prefix-icon="Lock" clearable />
@@ -121,11 +111,13 @@ const submit = async () => {
 
 <style scoped>
 .login-container {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px 0;
   background: radial-gradient(1200px 600px at 10% 10%, #f0f5ff 0%, #f7f9fc 40%, #eef3ff 70%, #e6f0ff 100%);
+  overflow-y: auto;
 }
 .login-panel {
   width: 980px;
@@ -144,22 +136,13 @@ const submit = async () => {
   align-items: center;
 }
 .brand { max-width: 520px; }
-.brand-logo {
-  width: 56px; height: 56px; border-radius: 16px;
-  background: rgba(255,255,255,0.15);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 800; margin-bottom: 16px;
-}
+.brand-logo { width: 56px; height: 56px; border-radius: 16px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 16px; }
 .brand-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
 .brand-desc { font-size: 14px; opacity: 0.9; }
 .panel-right { display: flex; align-items: center; }
 .login-card { width: 100%; border-radius: 16px; padding: 4px 4px 16px 4px; }
 .card-header { display: flex; align-items: center; gap: 12px; margin: 8px 8px 4px 8px; }
-.logo {
-  width: 40px; height: 40px; border-radius: 12px;
-  background: #4c6ef5; color: #fff; display: flex;
-  align-items: center; justify-content: center; font-weight: 700;
-}
+.logo { width: 40px; height: 40px; border-radius: 12px; background: #4c6ef5; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; }
 .title h2 { margin: 0; font-size: 20px; }
 .title p { margin: 4px 0 0; color: #909399; font-size: 13px; }
 .submit-btn { width: 100%; margin-top: 4px; }

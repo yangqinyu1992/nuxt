@@ -99,8 +99,17 @@
     <!-- 修改用户信息弹窗 -->
     <el-dialog v-model="editDialogVisible" title="修改用户信息" width="420px">
       <el-form label-width="88px">
-        <el-form-item label="头像地址">
-          <el-input v-model="editForm.avatar" placeholder="http(s):// 或 data:image/..."></el-input>
+        <el-form-item label="用户头像">
+          <el-upload
+            class="avatar-uploader"
+            action="http://47.120.13.248:3000/upload"
+            :show-file-list="false"
+            @success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+          >
+            <img v-if="editForm.avatar" :src="editForm.avatar" class="avatar" />
+            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+          </el-upload>
         </el-form-item>
         <el-form-item label="昵称">
           <el-input v-model="editForm.nickname" maxlength="20" show-word-limit></el-input>
@@ -118,9 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { HomeFilled, Fold, Expand, ArrowRight, User, Setting, FullScreen, Refresh, SwitchButton } from '@element-plus/icons-vue'
+import { HomeFilled, Fold, Expand, ArrowRight, User, Setting, FullScreen, Refresh, SwitchButton, Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import logo from '~/assets/logo.svg?url'
 
@@ -164,6 +171,29 @@ const onUserCommand = (cmd: string) => {
   } else if (cmd === 'logout') {
     logout()
   }
+}
+
+const handleAvatarSuccess = (response: any) => {
+  const url = response?.url || response?.data?.url || null
+  if (url) {
+    editForm.value.avatar = url
+    ElMessage.success('头像上传成功！')
+  } else {
+    ElMessage.error('头像上传失败，请重试。')
+  }
+}
+
+const beforeAvatarUpload = (file: any) => {
+  const isImage = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif'
+  const isLt2M = file.size / 1024 / 1024 < 2
+
+  if (!isImage) {
+    ElMessage.error('上传头像图片只能是 JPG、PNG 或 GIF 格式!')
+  }
+  if (!isLt2M) {
+    ElMessage.error('上传头像图片大小不能超过 2MB!')
+  }
+  return isImage && isLt2M
 }
 
 const isValidAvatar = (v: string) => {
@@ -334,7 +364,9 @@ const logout = async () => {
   }
   ElMessage.success('已退出登录')
   await nextTick()
-  navigateTo('/login')
+  await navigateTo('/login')
+  // 强制刷新页面，确保登录页视图与状态同步
+  if (typeof window !== 'undefined') window.location.reload()
 }
 
 // 页签状态

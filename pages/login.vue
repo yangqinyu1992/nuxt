@@ -67,17 +67,6 @@ const onRegister = () => {
   navigateTo('/register')
 }
 
-// 进入登录页禁用页面滚动，离开时恢复
-onMounted(() => {
-  if (typeof document !== 'undefined') {
-    document.body.classList.add('no-scroll')
-  }
-})
-onUnmounted(() => {
-  if (typeof document !== 'undefined') {
-    document.body.classList.remove('no-scroll')
-  }
-})
 </script>
 
 <template>
@@ -157,18 +146,17 @@ onUnmounted(() => {
 
 <style>
 /* 禁用整页滚动条（仅登录页生效） */
-.no-scroll {
-  overflow: hidden !important;
-}
 </style>
 
 <style scoped>
 .login-container {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px 0;
   background: radial-gradient(1200px 600px at 10% 10%, #f0f5ff 0%, #f7f9fc 40%, #eef3ff 70%, #e6f0ff 100%);
+  overflow-y: auto;
 }
 .login-panel {
   width: 980px;
