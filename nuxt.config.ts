@@ -8,19 +8,10 @@ export default defineNuxtConfig({
     '@/assets/styles/theme.css',
     '@/assets/styles/design-flat.css'
   ],
-  app: {
-    head: {
-      title: 'Nuxt + ElementPlus Demo',
-      meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }]
-    }
-  },
   runtimeConfig: {
-    mongodbUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/nuxt_auth',
+    mongodbUri: 'mongodb://root:123456@47.120.13.248:27018/admin?authSource=admin', // 更改端口为您的目标MongoDB实例的端口，并确认认证信息正确
     jwtSecret: process.env.JWT_SECRET || 'nuxt-elementplus-secret',
     public: {}
-  },
-  nitro: {
-    compatibilityDate: '2025-10-16'
   },
   experimental: {
     renderJsonPayloads: true,

@@ -16,7 +16,9 @@ import {
 } from '@element-plus/icons-vue'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(ElementPlus)
+  nuxtApp.vueApp.use(ElementPlus, {
+    zIndex: 2000 // 设置z-index基础值，避免注入警告
+  })
   
   // 按需注册图标组件
   const icons = {

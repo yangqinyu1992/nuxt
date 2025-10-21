@@ -333,6 +333,7 @@ const logout = async () => {
     return
   }
   ElMessage.success('已退出登录')
+  await nextTick()
   navigateTo('/login')
 }
 
