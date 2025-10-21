@@ -46,7 +46,14 @@ export default defineNuxtConfig({
   nitro: {
     compatibilityDate: '2025-10-16',
     minify: true,
-    compressPublicAssets: true
+    compressPublicAssets: true,
+    devProxy: {
+      '/upload_proxy': {
+        target: 'http://47.120.13.248:3000',
+        changeOrigin: true,
+        prependPath: true,
+      },
+    },
   },
   features: {
     inlineStyles: false

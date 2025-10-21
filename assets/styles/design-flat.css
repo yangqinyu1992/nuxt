@@ -98,15 +98,27 @@
   background: #fff;
 }
 
+/* 预览大图层级修正：确保图片预览浮层高于页面其它元素 */
+.design-flat .el-image-viewer__wrapper { z-index: 3500 !important; }
+
 /* Dialog */
 .design-flat .el-dialog {
   border-radius: 6px !important;
   box-shadow: var(--df-shadow-strong) !important;
 }
+/* 内容区域与标题左对齐：去掉左 padding */
+.design-flat .el-dialog__body {
+  padding-left: 0 !important;
+}
 .design-flat .el-dialog__header {
-  padding: 16px 20px 12px;
+  padding: 16px 20px 12px 0;
   border-bottom: 1px solid var(--df-border);
   margin-right: 0;
+}
+/* 标题与内容左对齐：默认 dialog 标题容器使用 flex-start 对齐 */
+.design-flat .el-dialog__header {
+  display: flex;
+  align-items: flex-start;
 }
 .design-flat .el-dialog__title {
   font-weight: 700;
@@ -114,6 +126,11 @@
   letter-spacing: 0.2px;
   color: var(--df-text-1);
   line-height: 1.2;
+  text-align: left;
+}
+/* 去除默认标题右侧 margin，避免看起来偏右 */
+.design-flat .el-dialog__header .el-dialog__title {
+  margin-right: auto;
 }
 .design-flat .el-dialog__headerbtn {
   top: 14px;
@@ -121,7 +138,7 @@
 }
 .design-flat .el-dialog__footer {
   border-top: 1px solid var(--df-border);
-  padding: 12px 20px 16px;
+  padding: 12px 20px 16px 0;
 }
 
 /* Misc */
@@ -186,6 +203,9 @@
 .design-flat .el-button {
   height: var(--df-control-height);
   padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ========================= */

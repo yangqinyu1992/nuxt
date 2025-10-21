@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, h, defineAsyncComponent } from 'vue'
+import moment from 'moment'
 import { ElMessage, ElMessageBox, ElButton, ElImage } from 'element-plus'
+import type { UploadUserFile } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 
 // 懒加载组件
 const ConfigTable = defineAsyncComponent(() => import('~/components/ConfigTable.vue'))
@@ -35,6 +38,7 @@ const form = ref({
   avatar: '',
   password: ''
 })
+const fileList = ref<UploadUserFile[]>([])
 const formLoading = ref(false)
 
 // 搜索字段配置
@@ -82,14 +86,21 @@ const tableColumns = [
         class: 'avatar',
         src: avatar,
         previewSrcList: [avatar],
-        hideOnClickModal: true
+        hideOnClickModal: true,
+        previewTeleported: true
       })
     }
   },
   {
     prop: 'createdAt',
     label: '创建时间',
-    minWidth: '180'
+    minWidth: '180',
+    render: (scope: any) => {
+      const v = scope.row.createdAt;
+      if (!v) return h('span', '-', {});
+      const text = moment(v).format('YYYY-MM-DD HH:mm:ss');
+      return h('span', {}, text);
+    }
   },
   {
     label: '操作',
@@ -172,6 +183,7 @@ function openCreate() {
   dialogTitle.value = '新建用户'
   editingId.value = null
   form.value = { username: '', name: '', avatar: '', password: '' }
+  fileList.value = []
   dialogVisible.value = true
 }
 
@@ -185,7 +197,35 @@ function openEdit(row: UserListItem) {
     avatar: row.avatar || '',
     password: '' // 可选修改，留空则不改
   }
+  // 初始化文件列表以显示 Element Plus 自带的“移除”按钮
+  fileList.value = form.value.avatar ? [{ name: 'avatar', url: form.value.avatar }] : []
   dialogVisible.value = true
+}
+
+function beforeAvatarUpload(file: File) {
+  const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+  const isOk = allowed.includes(file.type)
+  const isLt50M = file.size / 1024 / 1024 <= 50
+  if (!isOk) ElMessage.error('只能上传 JPG/PNG/GIF/WEBP 图片')
+  if (!isLt50M) ElMessage.error('图片大小不能超过 50MB')
+  return isOk && isLt50M
+}
+
+function onAvatarSuccess(res: any, file: any, fl: UploadUserFile[]) {
+  const url = res?.url || res?.data?.url || ''
+  if (url) {
+    form.value.avatar = url
+    fileList.value = [{ name: 'avatar', url }]
+    ElMessage.success('头像已上传（尚未保存）')
+  } else {
+    ElMessage.error('上传失败，请重试')
+  }
+}
+function onAvatarRemove() {
+  form.value.avatar = ''
+}
+function onAvatarExceed() {
+  ElMessage.warning('只允许上传一张头像，请先移除已上传的图片')
 }
 
 // 保存（新建/更新）
@@ -329,17 +369,31 @@ onBeforeUnmount(() => {
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="520px" destroy-on-close>
-      <el-form label-width="90px" :model="form" @submit.prevent>
-        <el-form-item label="用户名">
+      <el-form label-position="left" label-width="100px" :model="form" @submit.prevent>
+        <el-form-item label="用户名" class="form-item">
           <el-input v-model="form.username" :disabled="!!editingId" maxlength="50" />
         </el-form-item>
-        <el-form-item label="昵称">
+        <el-form-item label="昵称" class="form-item">
           <el-input v-model="form.name" maxlength="50" />
         </el-form-item>
-        <el-form-item label="头像URL">
-          <el-input v-model="form.avatar" maxlength="300" placeholder="https://..." />
+        <el-form-item label="头像" class="form-item is-avatar">
+          <el-upload
+            v-model:file-list="fileList"
+            action="/upload_proxy/upload"
+            list-type="picture-card"
+            :limit="1"
+            :multiple="false"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            :on-exceed="onAvatarExceed"
+            :on-success="onAvatarSuccess"
+            :on-remove="onAvatarRemove"
+            :before-upload="beforeAvatarUpload"
+            :data="{ folder: 'avatars' }"
+          >
+            <el-icon><Plus /></el-icon>
+          </el-upload>
         </el-form-item>
-        <el-form-item :label="editingId ? '新密码' : '密码'">
+        <el-form-item :label="editingId ? '新密码' : '密码'" class="form-item">
           <el-input v-model="form.password" type="password" show-password maxlength="100" :placeholder="editingId ? '留空则不修改' : ''" />
         </el-form-item>
       </el-form>
@@ -355,6 +409,21 @@ onBeforeUnmount(() => {
 .user-page {
   padding: 12px 0;
 }
+
+/* 顶部表单布局：置顶标签、统一间距、头像项上下对齐更好看 */
+:deep(.el-dialog__body) {
+  padding-top: 12px;
+}
+.form-item {
+  margin-bottom: 14px;
+}
+.is-avatar :deep(.el-form-item__label) {
+  line-height: 1.2;
+}
+.is-avatar :deep(.el-form-item__content) {
+  display: flex;
+  align-items: center;
+}
 .toolbar {
   display: flex;
   gap: 8px;
@@ -365,11 +434,30 @@ onBeforeUnmount(() => {
   width: 240px;
 }
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 6px;
   object-fit: cover;
   border: 1px solid #ebeef5;
+}
+:deep(.el-table .cell .avatar) {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+/* 头像上传样式与布局（与全局一致） */
+.avatar-uploader, .avatar-preview, .avatar-placeholder, .avatar-uploader-icon, .avatar-placeholder-text, .avatar-placeholder-hint {
+  display: none;
+}
+:deep(.el-upload--picture-card) {
+  --size: 104px;
+  width: var(--size);
+  height: var(--size);
+}
+:deep(.el-upload-list--picture-card .el-upload-list__item) {
+  width: 104px;
+  height: 104px;
 }
 .pager {
   display: flex;

@@ -1,5 +1,5 @@
 <template>
-  <el-config-provider :z-index="3000">
+  <el-config-provider>
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

@@ -166,7 +166,7 @@ function handleButtonClick(button: SearchButton) {
             v-for="button in buttons"
             :key="button.text"
             :type="button.type"
-            :icon="button.icon"
+            :icon="typeof button.icon === 'object' ? button.icon : undefined"
             :loading="button.loading"
             :disabled="button.disabled"
             @click="handleButtonClick(button)"

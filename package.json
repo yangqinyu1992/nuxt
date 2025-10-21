@@ -13,6 +13,7 @@
     "echarts": "^6.0.0",
     "element-plus": "^2.11.4",
     "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
     "mongoose": "^8.19.1",
     "nuxt": "latest",
     "vue-echarts": "^8.0.1"
@@ -25,6 +26,7 @@
     }
   },
   "devDependencies": {
+    "@nuxtjs/proxy": "^2.1.0",
     "@types/node": "^24.7.2"
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <el-config-provider :z-index="3000">
+  <el-config-provider>
     <el-container :class="['app-layout', 'design-flat', densityClass]" ref="containerRef">
     <!-- 左右结构：左侧菜单 + 右侧（顶部栏 + 内容） -->
     <el-aside class="app-aside" :class="{ 'is-collapsed': isCollapsed }" :width="asideWidth">
@@ -68,14 +68,16 @@
           <!-- 用户头像下拉 -->
           <el-dropdown trigger="click" placement="bottom-end" popper-class="user-dropdown" @command="onUserCommand">
             <span class="el-dropdown-link" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
-              <el-avatar :size="32" :src="userAvatar || ''" @error="onAvatarError">{{ initials }}</el-avatar>
+              <el-avatar :size="32" v-if="userAvatar" :src="userAvatar" @error="onAvatarError" />
+              <el-avatar :size="32" v-else>{{ userName || '默认用户' }}</el-avatar>
+              <span class="user-name">{{ userName || '默认用户' }}</span>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item disabled>
                   <div style="display:flex;align-items:center;gap:8px;">
                     <el-avatar :size="22" :src="userAvatar" />
-                    <span>{{ userName }}</span>
+                    <span>{{ userName || '默认用户' }}</span>
                   </div>
                 </el-dropdown-item>
 
@@ -102,13 +104,28 @@
         <el-form-item label="用户头像">
           <el-upload
             class="avatar-uploader"
-            action="http://47.120.13.248:3000/upload"
+            action="/upload_proxy/upload"
             :show-file-list="false"
-            @success="handleAvatarSuccess"
+            :multiple="false"
+            :limit="1"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            :on-exceed="() => ElMessage.warning('只允许上传一张头像，请先移除已上传的图片')"
+            :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
+            :data="{ folder: 'avatars' }"
           >
-            <img v-if="editForm.avatar" :src="editForm.avatar" class="avatar" />
-            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+            <el-avatar
+              v-if="editForm.avatar"
+              :src="editForm.avatar"
+              shape="square"
+              :size="100"
+              class="avatar-preview"
+            />
+            <div v-else class="avatar-placeholder">
+              <el-icon class="avatar-uploader-icon"><Plus /></el-icon>
+              <span class="avatar-placeholder-text">上传头像</span>
+              <span class="avatar-placeholder-hint">支持 JPG/PNG/GIF，≤2MB</span>
+            </div>
           </el-upload>
         </el-form-item>
         <el-form-item label="昵称">
@@ -116,7 +133,7 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
+        <span class="dialog-footer" style="display:flex;gap:8px;align-items:center;justify-content:flex-end;">
           <el-button @click="editDialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="submitEdit">保 存</el-button>
         </span>
@@ -138,8 +155,11 @@ const isFullscreen = ref(false)
 
 // 用户信息与编辑弹窗
 const userName = ref('管理员')
-const userAvatar = ref(logo) // 默认用当前 logo 作为占位头像
+// 默认头像：改为使用 assets 目录下资源，构建时由 Vite 处理
+import tomAvatarUrl from '~/assets/tom-avatar.png'
+const userAvatar = ref(tomAvatarUrl)
 const editDialogVisible = ref(false)
+const currentUserId = ref('')
 const editForm = ref({ avatar: '', nickname: '' })
 
 // 头像占位（首字母）与加载失败回退
@@ -149,15 +169,49 @@ const onAvatarError = () => {
   return false
 }
 
-// 拉取当前用户信息
+// 拉取当前用户信息：调用 /api/auth/me（后端基于 token/cookie 解析当前用户），避免触发 /users/[id] 的无效ID
 const loadUser = async () => {
   try {
-    const { data, error } = await useFetch('/api/users/me', { server: false })
-    if (!error.value && data.value) {
-      userName.value = (data.value.name || userName.value)
-      userAvatar.value = (data.value.avatar || userAvatar.value)
+    const lsToken = typeof window !== 'undefined' ? localStorage.getItem('token') : ''
+
+    // 从 cookie 中尝试读取常见 token 名称
+    let cookieToken = ''
+    if (typeof document !== 'undefined') {
+      const cookies = Object.fromEntries(document.cookie.split(';').map(c => {
+        const [k, ...v] = c.split('=')
+        return [k.trim(), decodeURIComponent(v.join('='))]
+      }))
+      cookieToken = cookies['session_token'] || cookies['token'] || cookies['auth'] || cookies['access_token'] || ''
     }
-  } catch {}
+
+    const headers: Record<string, string> = {}
+    const finalToken = lsToken || cookieToken || ''
+    if (finalToken) {
+      headers['Authorization'] = `Bearer ${finalToken}`
+      headers['x-access-token'] = finalToken
+    }
+
+    const res: any = await $fetch('/api/auth/me', {
+      method: 'GET',
+      credentials: 'include',
+      headers,
+      ignoreResponseError: true,
+    })
+
+    const u = res?.user || {}
+    if (u?.id || u?.name || u?.avatar) {
+      currentUserId.value = String(u.id || '')
+      userName.value = u.name || userName.value || '默认用户'
+      userAvatar.value = u.avatar || userAvatar.value || tomAvatarUrl
+    } else {
+      userName.value = userName.value || '默认用户'
+      userAvatar.value = userAvatar.value || tomAvatarUrl
+    }
+  } catch (e) {
+    console.warn('loadUser exception:', e)
+    userName.value = userName.value || '默认用户'
+    userAvatar.value = userAvatar.value || tomAvatarUrl
+  }
 }
 
 const onUserCommand = (cmd: string) => {
@@ -176,24 +230,32 @@ const onUserCommand = (cmd: string) => {
 const handleAvatarSuccess = (response: any) => {
   const url = response?.url || response?.data?.url || null
   if (url) {
+    // 仅将上传结果写入编辑表单，真正替换顶部显示应在“保存”成功后由 submitEdit 处理
     editForm.value.avatar = url
-    ElMessage.success('头像上传成功！')
+    ElMessage.success('头像已上传（尚未保存），请点击保存以应用修改')
   } else {
     ElMessage.error('头像上传失败，请重试。')
   }
 }
 
+const removeAvatar = () => {
+  editForm.value.avatar = ''
+  userAvatar.value = ''
+  ElMessage.success('已移除头像')
+}
+
 const beforeAvatarUpload = (file: any) => {
-  const isImage = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif'
-  const isLt2M = file.size / 1024 / 1024 < 2
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+  const isImage = allowedTypes.includes(file.type)
+  const isLt50M = file.size / 1024 / 1024 <= 50
 
   if (!isImage) {
-    ElMessage.error('上传头像图片只能是 JPG、PNG 或 GIF 格式!')
+    ElMessage.error('上传头像图片只能是 JPG、PNG、GIF 或 WEBP 格式!')
   }
-  if (!isLt2M) {
-    ElMessage.error('上传头像图片大小不能超过 2MB!')
+  if (!isLt50M) {
+    ElMessage.error('上传头像图片大小不能超过 50MB!')
   }
-  return isImage && isLt2M
+  return isImage && isLt50M
 }
 
 const isValidAvatar = (v: string) => {
@@ -212,16 +274,27 @@ const submitEdit = async () => {
     return
   }
   try {
-    const response = await $fetch('/api/users/me', {
-      method: 'post',
+    // 优先使用后端提供的 /api/users/[id] 更新接口，避免自定义 /users/me 未实现导致的异常
+    const token = typeof window !== 'undefined' ? (localStorage.getItem('token') || '') : ''
+    const headers: Record<string, string> = {}
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+      headers['x-access-token'] = token
+    }
+
+    const updated: any = await $fetch(`/api/users/${currentUserId.value}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers,
       body: {
         avatar: editForm.value.avatar?.trim() || null,
         name: editForm.value.nickname.trim()
-      }
+      },
+      ignoreResponseError: true,
     })
-    const updated: any = response || {}
-    userName.value = (updated.nickname ?? editForm.value.nickname.trim())
-    userAvatar.value = (updated.avatar ?? (editForm.value.avatar?.trim() || userAvatar.value))
+
+    userName.value = (updated?.name ?? editForm.value.nickname.trim())
+    userAvatar.value = (updated?.avatar ?? (editForm.value.avatar?.trim() || userAvatar.value))
     editDialogVisible.value = false
     ElMessage.success('已更新用户信息')
   } catch {
@@ -553,7 +626,8 @@ const onTabRemove = (name: string) => {
   top: 0;
   z-index: 10;
   background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
+  /* 去掉底部边框 */
+  border-bottom: none;
   margin: 0 -16px;
   padding: 0 16px;
 }
@@ -562,6 +636,57 @@ const onTabRemove = (name: string) => {
   flex: 1;
   min-height: 0;
   overflow: visible;
+}
+.avatar-uploader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border: 1px dashed var(--el-border-color);
+  border-radius: 12px;
+  background-color: rgba(64, 158, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+.avatar-uploader:hover {
+  border-color: var(--el-color-primary);
+  background-color: rgba(64, 158, 255, 0.12);
+}
+
+.avatar-preview {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 100%;
+  width: 100%;
+  color: var(--text-2);
+  text-align: center;
+}
+
+.avatar-uploader-icon {
+  font-size: 24px;
+  color: var(--text-2);
+}
+
+.avatar-placeholder-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.avatar-placeholder-hint {
+  font-size: 12px;
+  color: var(--text-3);
 }
 
 /* 面包屑美化 */
@@ -704,13 +829,17 @@ const onTabRemove = (name: string) => {
 <style>
 /* 用户头像下拉菜单样式 */
 .user-dropdown {
-  min-width: 160px;
-  padding: 4px 0;
+  min-width: 200px;
+  padding: 6px 8px;
 }
 .user-dropdown .el-dropdown-menu__item {
   line-height: 28px;
 }
-</style>
+.user-name {
+  margin-left: 8px;
+  font-weight: 500;
+  color: var(--text-1);
+}</style>
 
 <style>
 /* Tooltip 不换行，避免一字一行 */
