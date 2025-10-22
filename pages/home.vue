@@ -8,7 +8,7 @@ definePageMeta({
 })
 
 // 懒加载图表组件
-const ChartCard = defineAsyncComponent(() => import('~/components/ChartCard.vue'))
+const ChartCard = defineAsyncComponent(() => import('~/components/ChartCard.client.vue'))
 
 // ========== 退出登录 ==========
 const logout = async () => {

@@ -25,7 +25,8 @@ export default defineNuxtConfig({
       }
     },
     ssr: {
-      noExternal: ['element-plus', '@sxzz/popperjs-es']
+      noExternal: ['element-plus', '@sxzz/popperjs-es'],
+      external: ['echarts', 'vue-echarts']
     },
     build: {
       chunkSizeWarningLimit: 1200,
@@ -35,7 +36,11 @@ export default defineNuxtConfig({
           manualChunks(id) {
             if (id.includes('node_modules/element-plus')) return 'vendor-element-plus'
             if (id.includes('node_modules/@sxzz/popperjs-es')) return 'vendor-popper'
-            if (id.includes('node_modules/echarts') || id.includes('node_modules/vue-echarts')) return 'vendor-echarts'
+            if (id.includes('node_modules/echarts/core')) return 'vendor-echarts-core'
+            if (id.includes('node_modules/echarts/renderers')) return 'vendor-echarts-renderers'
+            if (id.includes('node_modules/echarts/charts')) return 'vendor-echarts-charts'
+            if (id.includes('node_modules/echarts/components')) return 'vendor-echarts-components'
+            if (id.includes('node_modules/vue-echarts')) return 'vendor-vue-echarts'
             if (id.includes('node_modules/mongoose')) return 'vendor-db'
             if (id.includes('node_modules/moment')) return 'vendor-moment'
             if (id.includes('node_modules/jsonwebtoken')) return 'vendor-jwt'
