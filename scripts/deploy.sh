@@ -50,8 +50,30 @@ fi
 if command -v nc >/dev/null 2>&1; then
   if nc -z 127.0.0.1 27017; then
     echo "[CHECK] 检测到宿主机 MongoDB 端口 27017 已开启"
+    MONGO_READY=1
   else
-    echo "[WARN] 未检测到本机 27017 端口开放，请确认 MongoDB 已启动"
+    echo "[WARN] 未检测到本机 27017 端口开放，将尝试用 Docker 启动一个 MongoDB"
+    MONGO_READY=0
+  fi
+else
+  echo "[WARN] 未检测到 nc 命令，跳过端口探测"
+  MONGO_READY=0
+fi
+
+# 如未就绪，尝试以 Docker 启动/恢复 MongoDB（避免重复启动）
+if [ "${MONGO_READY}" = "0" ]; then
+  mkdir -p "$PROJECT_DIR/deploy/mongo_data"
+  if docker ps -a --format '{{.Names}}' | grep -q '^host-mongo$'; then
+    echo "[INFO] 发现已有容器 host-mongo，尝试启动它"
+    docker start host-mongo || true
+  else
+    echo "[INFO] 启动新的 MongoDB 容器（host-mongo）于 27017"
+    docker run -d \
+      --name host-mongo \
+      -p 27017:27017 \
+      -v "$PROJECT_DIR/deploy/mongo_data:/data/db" \
+      --restart unless-stopped \
+      mongo:6
   fi
 fi
 
