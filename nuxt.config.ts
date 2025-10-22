@@ -19,6 +19,11 @@ export default defineNuxtConfig({
     inlineSSRStyles: false
   },
   vite: {
+    resolve: {
+      alias: {
+        '@popperjs/core': '@sxzz/popperjs-es'
+      }
+    },
     build: {
       chunkSizeWarningLimit: 800
     },
