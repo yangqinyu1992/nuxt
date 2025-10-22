@@ -12,6 +12,9 @@ services:
       - NITRO_PORT=3000
     expose:
       - "3000"
+    # 使容器内可解析 host.docker.internal 指向宿主机
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
 
   nginx:

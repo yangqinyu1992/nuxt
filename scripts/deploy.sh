@@ -34,7 +34,8 @@ print(secrets.token_hex(32))
 PY
 )
   fi
-  DB_URI_DEFAULT="mongodb://127.0.0.1:27017/nuxt_ep_app"
+  # 默认容器内通过 host.docker.internal 连接宿主机 MongoDB
+  DB_URI_DEFAULT="mongodb://host.docker.internal:27017/nuxt_ep_app"
   cat > "$ENV_FILE" <<EOF
 # 部署环境变量（可按需修改）
 JWT_SECRET=${JWT_SECRET:-$GEN_SECRET}
@@ -43,6 +44,15 @@ EOF
   echo "[INFO] 已生成 .env：JWT_SECRET 与 MONGO_URI"
 else
   echo "[INFO] 检测到现有 .env，直接使用"
+fi
+
+# 本机 Mongo 端口探测（仅提示，不影响启动）
+if command -v nc >/dev/null 2>&1; then
+  if nc -z 127.0.0.1 27017; then
+    echo "[CHECK] 检测到宿主机 MongoDB 端口 27017 已开启"
+  else
+    echo "[WARN] 未检测到本机 27017 端口开放，请确认 MongoDB 已启动"
+  fi
 fi
 
 # 构建镜像并启动
