@@ -61,8 +61,8 @@ if [ ! -f "$ENV_FILE" ]; then
   else
     GEN_SECRET=$(python -c 'import secrets; print(secrets.token_hex(32))')
   fi
-  # 默认容器内通过 host.docker.internal 连接宿主机 MongoDB
-  DB_URI_DEFAULT="mongodb://host.docker.internal:27017/nuxt_ep_app"
+  # 默认容器内通过 host.docker.internal 连接宿主机 MongoDB（含鉴权 root/123456，库名 nuxt_ep_app）
+  DB_URI_DEFAULT="mongodb://root:123456@host.docker.internal:27017/nuxt_ep_app?authSource=admin"
   cat > "$ENV_FILE" <<EOF
 # 部署环境变量（可按需修改）
 JWT_SECRET=${JWT_SECRET:-$GEN_SECRET}
