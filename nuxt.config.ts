@@ -9,7 +9,7 @@ export default defineNuxtConfig({
     '@/assets/styles/design-flat.css'
   ],
   runtimeConfig: {
-    mongodbUri: 'mongodb://root:123456@47.120.13.248:27018/admin?authSource=admin', // 更改端口为您的目标MongoDB实例的端口，并确认认证信息正确
+    mongodbUri: process.env.MONGO_URI || 'mongodb://root:123456@host.docker.internal:27017/nuxt_ep_app?authSource=admin',
     jwtSecret: process.env.JWT_SECRET || 'nuxt-elementplus-secret',
     public: {}
   },

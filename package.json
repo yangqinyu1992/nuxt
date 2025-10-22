@@ -13,6 +13,7 @@
     "echarts": "^6.0.0",
     "element-plus": "^2.11.4",
     "@popperjs/core": "^2.11.8",
+    "@sxzz/popperjs-es": "^2.11.7",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "mongoose": "^8.19.1",
