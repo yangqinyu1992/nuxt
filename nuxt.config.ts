@@ -24,6 +24,9 @@ export default defineNuxtConfig({
         '@popperjs/core': '@sxzz/popperjs-es'
       }
     },
+    ssr: {
+      noExternal: ['element-plus', '@sxzz/popperjs-es']
+    },
     build: {
       chunkSizeWarningLimit: 800
     },
@@ -34,6 +37,9 @@ export default defineNuxtConfig({
         }
       }
     }
+  },
+  build: {
+    transpile: ['element-plus', '@sxzz/popperjs-es']
   },
   app: {
     head: {
@@ -52,6 +58,16 @@ export default defineNuxtConfig({
     compatibilityDate: '2025-10-16',
     minify: true,
     compressPublicAssets: true,
+    rollupConfig: {
+      // 确保服务端打包也应用 alias 到 ESM 版本
+      // 使用 @sxzz/popperjs-es 代替 @popperjs/core
+      plugins: [],
+      resolve: {
+        alias: {
+          '@popperjs/core': '@sxzz/popperjs-es'
+        }
+      }
+    },
     devProxy: {
       '/upload_proxy': {
         target: 'http://47.120.13.248:3000',
