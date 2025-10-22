@@ -32,11 +32,13 @@ export default defineNuxtConfig({
       sourcemap: false,
       rollupOptions: {
         output: {
-          manualChunks: {
-            'vendor-element-plus': ['element-plus'],
-            'vendor-echarts': ['echarts', 'vue-echarts'],
-            'vendor-db': ['mongoose'],
-            'vendor-utils': ['moment', 'jsonwebtoken']
+          manualChunks(id) {
+            if (id.includes('node_modules/element-plus')) return 'vendor-element-plus'
+            if (id.includes('node_modules/@sxzz/popperjs-es')) return 'vendor-popper'
+            if (id.includes('node_modules/echarts') || id.includes('node_modules/vue-echarts')) return 'vendor-echarts'
+            if (id.includes('node_modules/mongoose')) return 'vendor-db'
+            if (id.includes('node_modules/moment')) return 'vendor-moment'
+            if (id.includes('node_modules/jsonwebtoken')) return 'vendor-jwt'
           }
         }
       }
