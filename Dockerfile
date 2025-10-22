@@ -10,7 +10,7 @@ RUN npm i -g pnpm
 
 # Only copy manifest first for better caching
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && corepack prepare pnpm@latest --activate && pnpm install --frozen-lockfile
+RUN corepack enable && corepack prepare pnpm@latest --activate && pnpm install --no-frozen-lockfile
 
 # Copy source and build
 COPY . .
@@ -28,7 +28,7 @@ ENV NITRO_PORT=3000
 # Install production deps
 RUN npm i -g pnpm
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && corepack prepare pnpm@latest --activate && pnpm install --prod --frozen-lockfile
+RUN corepack enable && corepack prepare pnpm@latest --activate && pnpm install --prod --no-frozen-lockfile
 
 # Copy build output only
 COPY --from=builder /app/.output ./.output
