@@ -28,7 +28,18 @@ export default defineNuxtConfig({
       noExternal: ['element-plus', '@sxzz/popperjs-es']
     },
     build: {
-      chunkSizeWarningLimit: 800
+      chunkSizeWarningLimit: 1200,
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-element-plus': ['element-plus'],
+            'vendor-echarts': ['echarts', 'vue-echarts'],
+            'vendor-db': ['mongoose'],
+            'vendor-utils': ['moment', 'jsonwebtoken']
+          }
+        }
+      }
     },
     css: {
       preprocessorOptions: {
@@ -56,11 +67,9 @@ export default defineNuxtConfig({
   },
   nitro: {
     compatibilityDate: '2025-10-16',
-    minify: true,
+    minify: false,
     compressPublicAssets: true,
     rollupConfig: {
-      // 确保服务端打包也应用 alias 到 ESM 版本
-      // 使用 @sxzz/popperjs-es 代替 @popperjs/core
       plugins: [],
       resolve: {
         alias: {

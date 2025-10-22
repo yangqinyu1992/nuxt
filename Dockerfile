@@ -14,6 +14,7 @@ RUN corepack enable && corepack prepare pnpm@latest --activate && pnpm install -
 
 # Copy source and build
 COPY . .
+ENV NODE_OPTIONS=--max_old_space_size=2048
 RUN --mount=type=cache,target=/root/.pnpm-store pnpm build
 
 # ========== Runner stage ==========
