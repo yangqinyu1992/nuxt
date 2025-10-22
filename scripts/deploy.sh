@@ -12,6 +12,17 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")"/.. && pwd)"
 cd "$PROJECT_DIR"
 
+# 工具函数：检测主机端口是否开放（优先 nc，备用 /dev/tcp）
+is_port_open() {
+  local host="$1" port="$2"
+  if command -v nc >/dev/null 2>&1; then
+    nc -z "$host" "$port" >/dev/null 2>&1
+    return $?
+  else
+    (echo >/dev/tcp/$host/$port) >/dev/null 2>&1 && return 0 || return 1
+  fi
+}
+
 # 确保服务器根目录存在 /app 作为部署基础路径（带权限处理与回退）
 DEPLOY_BASE="/app"
 if [ ! -d "$DEPLOY_BASE" ]; then
@@ -76,20 +87,15 @@ fi
 # 允许通过环境变量跳过 Mongo 启动逻辑（例如已有稳定外部库）
 SKIP_MONGO_START=${SKIP_MONGO_START:-0}
 
-# 本机 Mongo 端口探测（仅提示，不影响启动）
+# 检测宿主机 Mongo 端口（优先直接检测 127.0.0.1:27017，若开放则视为已运行）
 if [ "$SKIP_MONGO_START" = "1" ]; then
   echo "[INFO] 已设置 SKIP_MONGO_START=1，跳过 Mongo 检测与启动"
   MONGO_READY=1
-elif command -v nc >/dev/null 2>&1; then
-  if nc -z 127.0.0.1 27017; then
-    echo "[CHECK] 检测到宿主机 MongoDB 端口 27017 已开启"
-    MONGO_READY=1
-  else
-    echo "[WARN] 未检测到本机 27017 端口开放，将尝试用 Docker 启动一个 MongoDB"
-    MONGO_READY=0
-  fi
+elif is_port_open 127.0.0.1 27017; then
+  echo "[CHECK] 检测到宿主机 MongoDB 27017 已运行（不再启动容器版）"
+  MONGO_READY=1
 else
-  echo "[WARN] 未检测到 nc 命令，跳过端口探测"
+  echo "[WARN] 127.0.0.1:27017 未开放，准备启动容器版 MongoDB"
   MONGO_READY=0
 fi
 
