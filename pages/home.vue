@@ -116,39 +116,10 @@ const lineOption = computed(() => ({
   }]
 }))
 
-// 懒加载ECharts模块
-const loadECharts = async () => {
-  const echarts = await import('echarts/core')
-  const { CanvasRenderer } = await import('echarts/renderers')
-  const { LineChart, BarChart, PieChart } = await import('echarts/charts')
-  const {
-    TitleComponent,
-    TooltipComponent,
-    LegendComponent,
-    GridComponent
-  } = await import('echarts/components')
-  
-  echarts.use([
-    CanvasRenderer,
-    LineChart,
-    BarChart,
-    PieChart,
-    TitleComponent,
-    TooltipComponent,
-    LegendComponent,
-    GridComponent
-  ])
-  
-  return echarts
-}
 
-// 在组件挂载后预加载ECharts
+
 onMounted(async () => {
-  // 小延时以平滑展示，真实项目可与首个数据接口完成后联动
   setTimeout(() => (pageLoading.value = false), 250)
-  
-  // 预加载ECharts模块
-  await loadECharts()
 })
 
 // ========== 饼图（渠道占比） ==========
