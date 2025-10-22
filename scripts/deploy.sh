@@ -92,12 +92,12 @@ fi
 set -a
 . "$ENV_FILE"
 set +a
-# 若未显式定义 MONGO_URI，则用上述配置项拼装默认连接串
+# 若未显式定义 MONGO_URI，则优先使用内部网络直连 compose 的 mongo 服务
 if [ -z "${MONGO_URI:-}" ]; then
-  DB_URI_DEFAULT="mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@host.docker.internal:${MONGO_PORT}/${MONGO_DB_NAME}?authSource=admin"
+  DB_URI_DEFAULT="mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@mongo:27017/${MONGO_DB_NAME}?authSource=admin"
   printf "MONGO_URI=%s\n" "$DB_URI_DEFAULT" >> "$ENV_FILE"
   export MONGO_URI="$DB_URI_DEFAULT"
-  echo "[INFO] 已写入默认 MONGO_URI 到 .env -> $MONGO_URI"
+  echo "[INFO] 已写入默认 MONGO_URI 到 .env（直连 compose 的 mongo） -> $MONGO_URI"
 fi
 
 # 允许通过环境变量跳过 Mongo 启动逻辑（例如已有稳定外部库）

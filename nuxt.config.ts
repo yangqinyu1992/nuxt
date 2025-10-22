@@ -9,7 +9,7 @@ export default defineNuxtConfig({
     '@/assets/styles/design-flat.css'
   ],
   runtimeConfig: {
-    mongodbUri: process.env.MONGO_URI || `mongodb://${process.env.MONGO_ROOT_USER || 'root'}:${process.env.MONGO_ROOT_PASS || '123456'}@host.docker.internal:${process.env.MONGO_PORT || '3004'}/${process.env.MONGO_DB_NAME || 'nuxt_ep_app'}?authSource=admin`,
+    mongodbUri: process.env.MONGO_URI || `mongodb://${process.env.MONGO_ROOT_USER || 'root'}:${process.env.MONGO_ROOT_PASS || '123456'}@mongo:27017/${process.env.MONGO_DB_NAME || 'nuxt_ep_app'}?authSource=admin`,
     jwtSecret: process.env.JWT_SECRET || 'nuxt-elementplus-secret',
     public: {}
   },
