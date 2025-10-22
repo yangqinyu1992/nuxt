@@ -111,29 +111,15 @@ elif is_port_open 127.0.0.1 "$MONGO_PORT"; then
   echo "[CHECK] 检测到宿主机 MongoDB ${MONGO_PORT} 已运行（不再启动容器版）"
   MONGO_READY=1
 else
-  echo "[WARN] 127.0.0.1:${MONGO_PORT} 未开放，准备启动容器版 MongoDB"
+  echo "[WARN] 127.0.0.1:${MONGO_PORT} 未开放，将使用 docker compose 启动 mongo 服务"
   MONGO_READY=0
 fi
 
-# 如未就绪，尝试以 Docker 启动/恢复 MongoDB（避免重复启动）
+# 如未就绪，使用 docker compose 启动 mongo（避免重复启动）
 if [ "${MONGO_READY}" = "0" ] && [ "$SKIP_MONGO_START" != "1" ]; then
-  # 将 Mongo 数据持久化到 /app/mongo_data（若可用），否则退回本工程目录
-  DATA_DIR_BASE="${DEPLOY_BASE:-$PROJECT_DIR}"
-  mkdir -p "$DATA_DIR_BASE/mongo_data"
-  if docker ps -a --format '{{.Names}}' | grep -q '^host-mongo$'; then
-    echo "[INFO] 发现已有容器 host-mongo，尝试启动它"
-    docker start host-mongo || true
-  else
-    echo "[INFO] 启动新的 MongoDB 容器（host-mongo）于 $MONGO_PORT（root/123456）"
-    docker run -d \
-      --name host-mongo \
-      -p ${MONGO_PORT}:27017 \
-      -e MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER} \
-      -e MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASS} \
-      -v "$DATA_DIR_BASE/mongo_data:/data/db" \
-      --restart unless-stopped \
-      mongo:6
-  fi
+  echo "[INFO] 通过 docker compose 启动 mongo 服务（端口 ${MONGO_PORT}）"
+  # 确保 docker-compose.yml 中存在 mongo 服务（已添加）
+  docker compose up -d mongo
 fi
 
 # 构建镜像并启动

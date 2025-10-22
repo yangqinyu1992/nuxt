@@ -17,6 +17,19 @@ services:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
 
+  # 可选的 Mongo 服务：部署脚本在检测端口未开放时会独立启动它
+  mongo:
+    image: mongo:6
+    container_name: nuxt-ep-mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASS}
+    ports:
+      - "${MONGO_PORT:-3004}:27017"
+    volumes:
+      - ./mongo_data:/data/db
+    restart: unless-stopped
+
   nginx:
     image: nginx:alpine
     container_name: nuxt-ep-nginx
