@@ -12,6 +12,13 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")"/.. && pwd)"
 cd "$PROJECT_DIR"
 
+# 确保服务器根目录存在 /app 作为部署基础路径
+DEPLOY_BASE="/app"
+if [ ! -d "$DEPLOY_BASE" ]; then
+  echo "[INFO] /app 不存在，正在创建..."
+  mkdir -p "$DEPLOY_BASE" || echo "[WARN] 无法创建 /app（可能需要权限），将继续使用当前项目目录作为数据路径"
+fi
+
 # 检查 Docker / Compose
 if ! command -v docker >/dev/null 2>&1; then
   echo "[ERROR] 未检测到 docker，请先安装 Docker."; exit 1
@@ -62,7 +69,9 @@ fi
 
 # 如未就绪，尝试以 Docker 启动/恢复 MongoDB（避免重复启动）
 if [ "${MONGO_READY}" = "0" ]; then
-  mkdir -p "$PROJECT_DIR/deploy/mongo_data"
+  # 将 Mongo 数据持久化到 /app/mongo_data（若可用），否则退回本工程目录
+  DATA_DIR_BASE="${DEPLOY_BASE:-$PROJECT_DIR}"
+  mkdir -p "$DATA_DIR_BASE/mongo_data"
   if docker ps -a --format '{{.Names}}' | grep -q '^host-mongo$'; then
     echo "[INFO] 发现已有容器 host-mongo，尝试启动它"
     docker start host-mongo || true
@@ -71,7 +80,7 @@ if [ "${MONGO_READY}" = "0" ]; then
     docker run -d \
       --name host-mongo \
       -p 27017:27017 \
-      -v "$PROJECT_DIR/deploy/mongo_data:/data/db" \
+      -v "$DATA_DIR_BASE/mongo_data:/data/db" \
       --restart unless-stopped \
       mongo:6
   fi
