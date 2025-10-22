@@ -41,7 +41,7 @@ if [ ! -w "$DEPLOY_BASE" ]; then
     echo "[WARN] 仍不可写，回退到项目目录作为数据路径"
     DEPLOY_BASE="$PROJECT_DIR"
   fi
-}
+fi
 
 # 检查 Docker / Compose
 if ! command -v docker >/dev/null 2>&1; then
