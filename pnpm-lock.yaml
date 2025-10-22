@@ -11,6 +11,9 @@ importers:
       '@element-plus/icons-vue':
         specifier: ^2.3.2
         version: 2.3.2(vue@3.5.22)
+      '@sxzz/popperjs-es':
+        specifier: ^2.11.7
+        version: 2.11.7
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
