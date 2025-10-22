@@ -1,10 +1,7 @@
-import { defineEventHandler, getCookie, createError } from 'h3'
-import { useRuntimeConfig } from '#imports'
-import { User } from '../../models/User'
-import { verifyToken } from '../../utils/auth'
-
+import { User } from '../models/User';
 
 export default defineEventHandler(async (event) => {
+  // 从事件上下文中获取用户信息，该信息由 auth 中间件设置
   const userPayload = event.context.user;
 
   if (!userPayload) {
@@ -14,6 +11,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  // 从数据库中查找完整的用户信息
   const user = await User.findById(userPayload.uid);
 
   if (!user) {
@@ -23,5 +21,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  return { user: { id: user._id, username: user.username, name: user.name || '', avatar: user.avatar || '' } };
+  // 返回用户信息
+  return {
+    id: user._id,
+    username: user.username,
+    name: user.name,
+    avatar: user.avatar,
+  };
 });

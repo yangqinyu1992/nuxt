@@ -4,6 +4,7 @@ import moment from 'moment'
 import { ElMessage, ElMessageBox, ElButton, ElImage } from 'element-plus'
 import type { UploadUserFile } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
+import { useApi } from '~/composables/useApi'
 
 // 懒加载组件
 const ConfigTable = defineAsyncComponent(() => import('~/components/ConfigTable.vue'))
@@ -59,8 +60,28 @@ const searchButtons = [
     type: 'success' as const,
     text: '新建',
     icon: 'Plus'
+  },
+  {
+    type: 'danger' as const,
+    text: '登出',
+    icon: 'SwitchButton',
+    onClick: handleLogout
   }
 ]
+
+async function handleLogout() {
+  try {
+    // 先清理前端 accessToken，避免后续首屏触发冗余校验
+    const accessToken = useCookie<string | null>('accessToken')
+    accessToken.value = null
+
+    await useApi('/api/auth/logout', { method: 'POST' })
+    ElMessage.success('已登出')
+    navigateTo('/login', { replace: true })
+  } catch (e) {
+    ElMessage.error('登出失败')
+  }
+}
 
 // 表格列配置
 const tableColumns = [
@@ -134,15 +155,15 @@ function isImgUrl(u?: string) {
 async function fetchList() {
   loading.value = true
   try {
-    const data = await $fetch<{ items: UserListItem[]; total: number; page: number; pageSize: number }>('/api/users', {
+    const { data, error } = await useApi<{ items: UserListItem[]; total: number; page: number; pageSize: number }>('/api/users', {
       method: 'GET',
       params: { page: page.value, pageSize: pageSize.value, keyword: keyword.value.trim() },
-
     })
-    list.value = data.items
-    total.value = data.total
-    page.value = data.page
-    pageSize.value = data.pageSize
+    if (error.value) throw error.value
+    list.value = data.value.items
+    total.value = data.value.total
+    page.value = data.value.page
+    pageSize.value = data.value.pageSize
   } catch (e: any) {
     ElMessage.error(e?.data?.message || e?.message || '加载失败')
   } finally {
@@ -259,7 +280,7 @@ async function submitForm() {
   try {
     if (editingId.value) {
       // 更新
-      await $fetch(`/api/users/${editingId.value}`, {
+      const { error } = await useApi(`/api/users/${editingId.value}`, {
         method: 'PUT',
         body: {
           name: form.value.name.trim(),
@@ -267,12 +288,12 @@ async function submitForm() {
           // 密码可选
           ...(form.value.password.trim() ? { password: form.value.password.trim() } : {})
         },
-
       })
+      if (error.value) throw error.value
       ElMessage.success('已更新')
     } else {
       // 创建
-      await $fetch('/api/users', {
+      const { error } = await useApi('/api/users', {
         method: 'POST',
         body: {
           username: form.value.username.trim(),
@@ -280,8 +301,8 @@ async function submitForm() {
           avatar: form.value.avatar.trim(),
           password: form.value.password.trim()
         },
-
       })
+      if (error.value) throw error.value
       ElMessage.success('已创建')
     }
     dialogVisible.value = false
@@ -301,7 +322,8 @@ async function onDelete(row: UserListItem) {
     return
   }
   try {
-    await $fetch(`/api/users/${row.id}`, { method: 'DELETE' })
+    const { error } = await useApi(`/api/users/${row.id}`, { method: 'DELETE' })
+    if (error.value) throw error.value
     ElMessage.success('已删除')
     // 如果删除后当前页无数据，回退一页
     if (list.value.length === 1 && page.value > 1) {

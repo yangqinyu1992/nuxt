@@ -33,12 +33,15 @@ const submit = () => {
     if (!valid) return
     loading.value = true
     try {
-      const { error } = await useFetch('/api/auth/login', {
+      const { data, error } = await useFetch('/api/auth/login', {
         method: 'POST',
         server: false,
         body: { username: form.username, password: form.password },
       })
       if (error.value) throw error.value
+
+      const accessToken = useCookie('accessToken')
+      accessToken.value = data.value.accessToken
 
       if (form.remember) {
         usernameCookie.value = form.username

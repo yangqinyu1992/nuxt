@@ -14,14 +14,7 @@ function safeCreateError(i: any) {
 }
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const token = getCookie(event, 'token')
-  if (!token) throw safeCreateError({ statusCode: 401, statusMessage: '未登录', message: '未登录' })
-  try {
-    verifyToken(token, config.jwtSecret)
-  } catch {
-    throw safeCreateError({ statusCode: 401, statusMessage: '无效令牌', message: '无效令牌' })
-  }
+
 
   const q = getQuery(event)
   const page = Math.max(parseInt(String(q.page ?? '1'), 10) || 1, 1)

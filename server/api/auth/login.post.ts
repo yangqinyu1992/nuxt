@@ -34,13 +34,18 @@ export default defineEventHandler(async (event) => {
     throw safeCreateError({ statusCode: 401, statusMessage: '账号或密码错误', message: '账号或密码错误' })
   }
 
-  const token = signToken({ uid: user._id, username }, config.jwtSecret)
-  setCookie(event, 'token', token, {
+  const accessToken = signToken({ uid: user._id, username }, config.jwtSecret, '15m')
+  const refreshToken = signToken({ uid: user._id }, config.jwtSecret, '7d')
+
+  setCookie(event, 'refresh_token', refreshToken, {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
     maxAge: 7 * 24 * 3600
   })
 
-  return { user: { id: user._id, username: user.username, name: user.name || '', avatar: user.avatar || '' } }
+  return { 
+    accessToken,
+    user: { id: user._id, username: user.username, name: user.name || '', avatar: user.avatar || '' } 
+  }
 })
