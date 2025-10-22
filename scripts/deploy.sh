@@ -72,30 +72,46 @@ if [ ! -f "$ENV_FILE" ]; then
   else
     GEN_SECRET=$(python -c 'import secrets; print(secrets.token_hex(32))')
   fi
-  # 默认容器内通过 host.docker.internal 连接宿主机 MongoDB（含鉴权 root/123456，库名 nuxt_ep_app）
-  DB_URI_DEFAULT="mongodb://root:123456@host.docker.internal:27017/nuxt_ep_app?authSource=admin"
+  # 默认配置（可在 .env 中修改）
   cat > "$ENV_FILE" <<EOF
 # 部署环境变量（可按需修改）
 JWT_SECRET=${JWT_SECRET:-$GEN_SECRET}
-MONGO_URI=${MONGO_URI:-$DB_URI_DEFAULT}
+# Mongo 服务配置（作为配置项，可更改）
+MONGO_PORT=${MONGO_PORT:-3004}
+MONGO_ROOT_USER=${MONGO_ROOT_USER:-root}
+MONGO_ROOT_PASS=${MONGO_ROOT_PASS:-123456}
+MONGO_DB_NAME=${MONGO_DB_NAME:-nuxt_ep_app}
+# 应用连接串：容器内通过 host.docker.internal 访问宿主机的 MONGO_PORT
+MONGO_URI=
 EOF
-  echo "[INFO] 已生成 .env：JWT_SECRET 与 MONGO_URI"
+  echo "[INFO] 已生成 .env：JWT_SECRET 与 Mongo 配置项（未写死 MONGO_URI）"
 else
   echo "[INFO] 检测到现有 .env，直接使用"
+fi
+# 读取 .env 到环境变量
+set -a
+. "$ENV_FILE"
+set +a
+# 若未显式定义 MONGO_URI，则用上述配置项拼装默认连接串
+if [ -z "${MONGO_URI:-}" ]; then
+  DB_URI_DEFAULT="mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@host.docker.internal:${MONGO_PORT}/${MONGO_DB_NAME}?authSource=admin"
+  printf "MONGO_URI=%s\n" "$DB_URI_DEFAULT" >> "$ENV_FILE"
+  export MONGO_URI="$DB_URI_DEFAULT"
+  echo "[INFO] 已写入默认 MONGO_URI 到 .env -> $MONGO_URI"
 fi
 
 # 允许通过环境变量跳过 Mongo 启动逻辑（例如已有稳定外部库）
 SKIP_MONGO_START=${SKIP_MONGO_START:-0}
 
-# 检测宿主机 Mongo 端口（优先直接检测 127.0.0.1:27017，若开放则视为已运行）
+# 检测宿主机 Mongo 端口（按配置项 MONGO_PORT，默认 3004）
 if [ "$SKIP_MONGO_START" = "1" ]; then
   echo "[INFO] 已设置 SKIP_MONGO_START=1，跳过 Mongo 检测与启动"
   MONGO_READY=1
-elif is_port_open 127.0.0.1 27017; then
-  echo "[CHECK] 检测到宿主机 MongoDB 27017 已运行（不再启动容器版）"
+elif is_port_open 127.0.0.1 "$MONGO_PORT"; then
+  echo "[CHECK] 检测到宿主机 MongoDB ${MONGO_PORT} 已运行（不再启动容器版）"
   MONGO_READY=1
 else
-  echo "[WARN] 127.0.0.1:27017 未开放，准备启动容器版 MongoDB"
+  echo "[WARN] 127.0.0.1:${MONGO_PORT} 未开放，准备启动容器版 MongoDB"
   MONGO_READY=0
 fi
 
@@ -108,10 +124,12 @@ if [ "${MONGO_READY}" = "0" ] && [ "$SKIP_MONGO_START" != "1" ]; then
     echo "[INFO] 发现已有容器 host-mongo，尝试启动它"
     docker start host-mongo || true
   else
-    echo "[INFO] 启动新的 MongoDB 容器（host-mongo）于 27017"
+    echo "[INFO] 启动新的 MongoDB 容器（host-mongo）于 $MONGO_PORT（root/123456）"
     docker run -d \
       --name host-mongo \
-      -p 27017:27017 \
+      -p ${MONGO_PORT}:27017 \
+      -e MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER} \
+      -e MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASS} \
       -v "$DATA_DIR_BASE/mongo_data:/data/db" \
       --restart unless-stopped \
       mongo:6
