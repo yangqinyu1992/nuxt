@@ -25,8 +25,8 @@ export default defineNuxtConfig({
       }
     },
     ssr: {
-      noExternal: ['element-plus', '@sxzz/popperjs-es'],
-      external: ['echarts', 'vue-echarts']
+      // 避免将大依赖打进 SSR 包
+      external: ['echarts', 'vue-echarts', 'element-plus', '@sxzz/popperjs-es']
     },
     build: {
       chunkSizeWarningLimit: 1200,
