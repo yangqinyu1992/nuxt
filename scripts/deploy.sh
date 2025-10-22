@@ -12,12 +12,36 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")"/.. && pwd)"
 cd "$PROJECT_DIR"
 
-# 确保服务器根目录存在 /app 作为部署基础路径
+# 确保服务器根目录存在 /app 作为部署基础路径（带权限处理与回退）
 DEPLOY_BASE="/app"
 if [ ! -d "$DEPLOY_BASE" ]; then
   echo "[INFO] /app 不存在，正在创建..."
-  mkdir -p "$DEPLOY_BASE" || echo "[WARN] 无法创建 /app（可能需要权限），将继续使用当前项目目录作为数据路径"
+  if mkdir -p "$DEPLOY_BASE" 2>/dev/null; then
+    echo "[INFO] 已创建 /app"
+  elif command -v sudo >/dev/null 2>&1; then
+    if sudo mkdir -p "$DEPLOY_BASE"; then
+      echo "[INFO] 已使用 sudo 创建 /app"
+    else
+      echo "[WARN] sudo 创建 /app 失败，将回退到当前项目目录"
+      DEPLOY_BASE="$PROJECT_DIR"
+    fi
+  else
+    echo "[WARN] 无法创建 /app（可能需要权限），将回退到当前项目目录"
+    DEPLOY_BASE="$PROJECT_DIR"
+  fi
 fi
+# 若 /app 不可写，尝试调整权限；失败则回退
+if [ ! -w "$DEPLOY_BASE" ]; then
+  echo "[INFO] 检测到 $DEPLOY_BASE 不可写，尝试授予当前用户权限"
+  if command -v sudo >/dev/null 2>&1; then
+    sudo chown "$(whoami)":"$(whoami)" "$DEPLOY_BASE" 2>/dev/null || true
+    sudo chmod 775 "$DEPLOY_BASE" 2>/dev/null || true
+  fi
+  if [ ! -w "$DEPLOY_BASE" ]; then
+    echo "[WARN] 仍不可写，回退到项目目录作为数据路径"
+    DEPLOY_BASE="$PROJECT_DIR"
+  fi
+}
 
 # 检查 Docker / Compose
 if ! command -v docker >/dev/null 2>&1; then
