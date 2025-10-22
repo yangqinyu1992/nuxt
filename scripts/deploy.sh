@@ -59,11 +59,7 @@ if [ ! -f "$ENV_FILE" ]; then
   if command -v openssl >/dev/null 2>&1; then
     GEN_SECRET=$(openssl rand -hex 32)
   else
-    GEN_SECRET=$(python - <<'PY'
-import secrets
-print(secrets.token_hex(32))
-PY
-)
+    GEN_SECRET=$(python -c 'import secrets; print(secrets.token_hex(32))')
   fi
   # 默认容器内通过 host.docker.internal 连接宿主机 MongoDB
   DB_URI_DEFAULT="mongodb://host.docker.internal:27017/nuxt_ep_app"
