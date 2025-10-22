@@ -73,8 +73,14 @@ else
   echo "[INFO] 检测到现有 .env，直接使用"
 fi
 
+# 允许通过环境变量跳过 Mongo 启动逻辑（例如已有稳定外部库）
+SKIP_MONGO_START=${SKIP_MONGO_START:-0}
+
 # 本机 Mongo 端口探测（仅提示，不影响启动）
-if command -v nc >/dev/null 2>&1; then
+if [ "$SKIP_MONGO_START" = "1" ]; then
+  echo "[INFO] 已设置 SKIP_MONGO_START=1，跳过 Mongo 检测与启动"
+  MONGO_READY=1
+elif command -v nc >/dev/null 2>&1; then
   if nc -z 127.0.0.1 27017; then
     echo "[CHECK] 检测到宿主机 MongoDB 端口 27017 已开启"
     MONGO_READY=1
@@ -88,7 +94,7 @@ else
 fi
 
 # 如未就绪，尝试以 Docker 启动/恢复 MongoDB（避免重复启动）
-if [ "${MONGO_READY}" = "0" ]; then
+if [ "${MONGO_READY}" = "0" ] && [ "$SKIP_MONGO_START" != "1" ]; then
   # 将 Mongo 数据持久化到 /app/mongo_data（若可用），否则退回本工程目录
   DATA_DIR_BASE="${DEPLOY_BASE:-$PROJECT_DIR}"
   mkdir -p "$DATA_DIR_BASE/mongo_data"
